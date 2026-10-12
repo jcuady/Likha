@@ -25,6 +25,12 @@ dist-ssr
 
 # Local verification screenshots
 likha-deploy-*.png
+v-*-*.png
+d-*-*.png
+g-*-*.png
+h-*-*.png
+sec-*.png
+responsive-evidence/
 
 # Editor directories and files
 .vscode/*

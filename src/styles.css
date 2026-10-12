@@ -35,6 +35,7 @@ html{scroll-behavior:smooth;scroll-padding-top:36px}
 body{margin:0;background:var(--background);color:var(--foreground);font-family:var(--font-sans);font-weight:400;letter-spacing:0;-webkit-font-smoothing:antialiased}
 button,a{-webkit-tap-highlight-color:transparent}button{font:inherit}a{text-decoration:none;color:inherit}button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:5px}
 h1,h2,h3,p{margin:0}h1,h2,h3{font-weight:450;letter-spacing:0}img{display:block;max-width:100%}em{font-family:var(--font-editorial);font-weight:400}
+.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
 .premium-button{border-radius:99px;background:linear-gradient(var(--dark-top),var(--foreground));color:var(--primary-foreground);border:1px solid color-mix(in oklch,var(--card) 25%,var(--foreground));box-shadow:inset 0 1px 2px oklch(1 0 0 / .2),0 3px 5px oklch(.2 0 0 / .1);height:42px;padding:0 24px;font-size:12px;font-weight:450;transition:transform .2s,box-shadow .2s}
 .premium-button:hover{transform:translateY(-2px);box-shadow:0 6px 16px oklch(.2 0 0 / .18)}
 .glass-button{background:var(--glass);border:1px solid var(--glass-border);border-radius:30px;color:var(--foreground)}
@@ -51,9 +52,210 @@ h1,h2,h3,p{margin:0}h1,h2,h3{font-weight:450;letter-spacing:0}img{display:block;
 .property-dialog{max-width:650px;padding:25px;width:calc(100% - 32px);max-height:90dvh;overflow:auto}.detail-photo{border-radius:6px;width:100%;height:260px;object-fit:cover}.detail-title{font-size:25px;line-height:1.25;margin-top:5px}.detail-description{font-size:12px;line-height:1.6}.detail-facts{display:grid;grid-template-columns:repeat(3,1fr);padding:18px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);gap:12px}.detail-facts span{display:block;color:var(--muted-foreground);font-size:10px}.detail-facts strong{font-size:18px;font-weight:450}.detail-note{font-size:11px;line-height:1.5;color:var(--muted-foreground)}.info-dialog{width:calc(100% - 32px);border-radius:8px}.info-dialog p{font-size:13px;line-height:1.7;color:var(--muted-foreground)}
 @media(min-width:1500px){.hero{height:850px}.hero-copy{padding-top:145px}.hero h1{font-size:72px}.hero h1 em{font-size:82px}.occupancy{top:365px}.agent-widget{top:465px}}
 @media(max-width:900px){.hero{height:690px}.hero h1{font-size:51px}.hero h1 em{font-size:62px}.hero-copy{padding-top:125px}.occupancy{left:6%;top:330px;transform:scale(.85) rotate(-3deg);transform-origin:left}.agent-widget{right:6%;top:420px;transform:scale(.85) rotate(3deg);transform-origin:right}.content{padding:0 28px}.section-heading h2{font-size:36px}.section-heading{gap:25px}.section-heading p{max-width:330px;font-size:11px}.insight-choice{padding:16px 13px}.chart-stage{padding:22px;min-height:360px}.revenue-card{padding:20px}.properties{gap:17px}.property-copy{padding:12px 5px}.property-copy h3{font-size:13px}.property-copy p{font-size:9px}.property-price{font-size:20px}.property-price span{font-size:12px}.property-bottom .premium-button{padding:0 9px;font-size:8px}.dream{height:540px}.dream h2{font-size:55px}.dream h2 em{font-size:67px}.dream-service{padding:14px}.dream-service h3{font-size:15px}.tools-grid{gap:12px;grid-template-rows:250px 230px}.tool-card{padding:18px}.tool-card h3{font-size:17px}.empire h3{font-size:21px}.agents-panel{width:220px;margin-right:-25px}.empire-text{max-width:175px}.sustainable h3{font-size:19px}.footer-main{gap:24px}}
-@media(max-width:640px){.content{padding:0 22px}.hero{height:660px}.hero-photo{object-position:center bottom}.nav{top:19px;gap:13px;padding:7px 17px;font-size:10px}.nav-dot{display:none}.nav-brand{height:29px;width:29px}.hero-copy{padding:110px 16px 0}.hero-eyebrow{font-size:8px;letter-spacing:1.5px}.hero h1{font-size:39px;line-height:1.08}.hero h1 em{font-size:47px}.hero-copy .premium-button{margin-top:20px}.hero-sub{font-size:9px}.occupancy{top:302px;left:5%;transform:scale(.68) rotate(-3deg)}.agent-widget{top:391px;right:3%;transform:scale(.68) rotate(3deg)}.hero-brand{left:23px;bottom:31px}.hero-brand img{width:76px}.hero-brand span{font-size:8px}.insights{padding-top:22px;padding-bottom:53px}.pills{margin-bottom:17px}.pill{font-size:8px;padding:6px 11px}.section-heading{display:block;margin-bottom:24px}.section-heading h2{font-size:34px}.section-heading p{margin-top:20px;font-size:11px;max-width:100%}.insight-tool{grid-template-columns:1fr;gap:0}.insight-list{padding:7px;gap:3px}.insight-choice{padding:17px 14px}.insight-choice h3{font-size:15px}.insight-choice p{font-size:10px}.chart-stage{min-height:330px;padding:24px}.revenue-card{max-width:280px}.revenue-value{font-size:37px}.center-heading h2{font-size:34px}.center-heading h2 em{font-size:41px}.center-heading p{font-size:11px;max-width:290px}.center-heading{margin-bottom:30px}.properties{grid-template-columns:1fr;padding:0 8px}.property-card:first-child,.property-card:last-child{display:none}.property-card{border-width:6px;transform:none}.property-copy{padding:16px 10px}.property-copy h3{font-size:17px}.property-copy p{font-size:11px}.property-price{font-size:26px}.property-price span{font-size:16px}.property-bottom .premium-button{font-size:10px;height:32px;padding:0 15px}.carousel-controls{margin-top:25px}.featured{padding-bottom:35px}.dream{height:700px;margin:15px 0 55px}.dream-image{height:400px;object-position:65% center}.dream:after{height:370px}.dream h2{font-size:37px;padding:28px 12px 0}.dream h2 em{font-size:47px}.dream-services{grid-template-columns:1fr;gap:8px;bottom:10px;left:10px;right:10px}.dream-service{padding:14px 16px;background:var(--glass);backdrop-filter:blur(16px)}.dream-service h3{font-size:16px;margin-bottom:4px}.dream-service p{min-height:0;font-size:9px}.service-link{margin-top:7px;padding-top:7px;font-size:9px}.tools{padding-bottom:45px}.tools .center-heading h2{font-size:30px}.tools .center-heading h2 em{font-size:39px}.tools-grid{grid-template-columns:1fr 1fr;grid-template-rows:245px 240px 370px;gap:12px}.tool-card{padding:17px}.tool-card h3{font-size:16px}.tool-card p{font-size:9px}.mini-chart{margin-top:25px;min-width:180px}.globe{left:-12%;width:200px}.person-tag{font-size:6px;padding:3px}.person-one{right:9px;top:132px}.person-two{left:7px;top:174px}.person-three{right:9px;bottom:15px}.empire{grid-column:1/3;grid-row:2;gap:0;padding:22px 18px}.empire h3{font-size:20px}.empire-text{max-width:145px;flex-shrink:0}.empire p{font-size:10px;max-width:130px}.agents-panel{width:190px;padding:12px;margin-right:-40px;margin-top:20px}.agents-panel-title{font-size:13px}.agents-panel .agent-head{font-size:7px}.agents-panel .agent-widget{padding:8px}.sustainable{grid-column:1/3;grid-row:3;padding:24px}.sustainable h3{font-size:23px}.sustainable p{font-size:10px;max-width:240px}.sustainable img{height:64%;object-position:center 60%}.sustainable:after{top:32%;height:90px}.price-one{bottom:145px;left:50px}.price-two{bottom:105px;right:35px}.price-three{bottom:45px;left:90px}.footer{padding-top:32px}.footer-main{grid-template-columns:1fr 1fr;gap:30px}.footer-column h4{margin-bottom:14px}.footer-brand img{width:100px}.footer-brand p{font-size:10px}.footer-social{margin-top:15px}.footer-bottom{font-size:7px;gap:10px;flex-wrap:wrap}.footer-bottom div{gap:12px}.detail-photo{height:200px}.detail-title{font-size:23px}.detail-facts strong{font-size:16px}}
+@media(max-width:640px){.content{padding:0 22px}.hero{height:660px}.hero-photo{object-position:center bottom}.nav{top:19px;gap:13px;padding:7px 17px;font-size:10px}.nav-dot{display:none}.nav-brand{height:29px;width:29px}.hero-copy{padding:110px 16px 0}.hero-eyebrow{font-size:8px;letter-spacing:1.5px}.hero h1{font-size:39px;line-height:1.08}.hero h1 em{font-size:47px}.hero-copy .premium-button{margin-top:20px}.hero-sub{font-size:9px}.occupancy{top:302px;left:5%;transform:scale(.68) rotate(-3deg)}.agent-widget{top:391px;right:3%;transform:scale(.68) rotate(3deg)}.hero-brand{left:23px;bottom:31px}.hero-brand img{width:76px}.hero-brand span{font-size:8px}.insights{padding-top:22px;padding-bottom:53px}.pills{margin-bottom:17px}.pill{font-size:8px;padding:6px 11px}.section-heading{display:block;margin-bottom:24px}.section-heading h2{font-size:34px}.section-heading p{margin-top:20px;font-size:11px;max-width:100%}.insight-tool{grid-template-columns:1fr;gap:0}.insight-list{padding:7px;gap:3px}.insight-choice{padding:17px 14px}.insight-choice h3{font-size:15px}.insight-choice p{font-size:10px}.chart-stage{min-height:330px;padding:24px}.revenue-card{max-width:280px}.revenue-value{font-size:37px}.center-heading h2{font-size:34px}.center-heading h2 em{font-size:41px}.center-heading p{font-size:11px;max-width:290px}.center-heading{margin-bottom:30px}.properties{grid-template-columns:1fr;padding:0 8px;gap:20px}.property-card{border-width:6px;transform:none}.property-copy{padding:16px 10px}.property-copy h3{font-size:17px}.property-copy p{font-size:11px}.property-price{font-size:26px}.property-price span{font-size:16px}.property-bottom .premium-button{font-size:10px;height:32px;padding:0 15px}.carousel-controls{margin-top:25px}.featured{padding-bottom:35px}.dream{height:700px;margin:15px 0 55px}.dream-image{height:400px;object-position:65% center}.dream:after{height:370px}.dream h2{font-size:37px;padding:28px 12px 0}.dream h2 em{font-size:47px}.dream-services{grid-template-columns:1fr;gap:8px;bottom:10px;left:10px;right:10px}.dream-service{padding:14px 16px;background:var(--glass);backdrop-filter:blur(16px)}.dream-service h3{font-size:16px;margin-bottom:4px}.dream-service p{min-height:0;font-size:9px}.service-link{margin-top:7px;padding-top:7px;font-size:9px}.tools{padding-bottom:45px}.tools .center-heading h2{font-size:30px}.tools .center-heading h2 em{font-size:39px}.tools-grid{grid-template-columns:1fr 1fr;grid-template-rows:245px 240px 370px;gap:12px}.tool-card{padding:17px}.tool-card h3{font-size:16px}.tool-card p{font-size:9px}.mini-chart{margin-top:25px;min-width:180px}.globe{left:-12%;width:200px}.person-tag{font-size:6px;padding:3px}.person-one{right:9px;top:132px}.person-two{left:7px;top:174px}.person-three{right:9px;bottom:15px}.empire{grid-column:1/3;grid-row:2;gap:0;padding:22px 18px}.empire h3{font-size:20px}.empire-text{max-width:145px;flex-shrink:0}.empire p{font-size:10px;max-width:130px}.agents-panel{width:190px;padding:12px;margin-right:-40px;margin-top:20px}.agents-panel-title{font-size:13px}.agents-panel .agent-head{font-size:7px}.agents-panel .agent-widget{padding:8px}.sustainable{grid-column:1/3;grid-row:3;padding:24px}.sustainable h3{font-size:23px}.sustainable p{font-size:10px;max-width:240px}.sustainable img{height:64%;object-position:center 60%}.sustainable:after{top:32%;height:90px}.price-one{bottom:145px;left:50px}.price-two{bottom:105px;right:35px}.price-three{bottom:45px;left:90px}.footer{padding-top:32px}.footer-main{grid-template-columns:1fr 1fr;gap:30px}.footer-column h4{margin-bottom:14px}.footer-brand img{width:100px}.footer-brand p{font-size:10px}.footer-social{margin-top:15px}.footer-bottom{font-size:7px;gap:10px;flex-wrap:wrap}.footer-bottom div{gap:12px}.detail-photo{height:200px}.detail-title{font-size:23px}.detail-facts strong{font-size:16px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*:before,*:after{animation:none!important;transition:none!important}}
 .bar-height-45{height:45px}.bar-height-52{height:52px}.bar-height-61{height:61px}.bar-height-64{height:64px}.bar-height-68{height:68px}.bar-height-70{height:70px}.bar-height-72{height:72px}.bar-height-75{height:75px}.bar-height-77{height:77px}.bar-height-78{height:78px}.bar-height-89{height:89px}.bar-height-92{height:92px}.bar-height-97{height:97px}.bar-height-100{height:100px}.bar-height-101{height:101px}.bar-height-110{height:110px}.bar-height-113{height:113px}.bar-height-120{height:120px}.bar-height-121{height:121px}
 @media(max-width:640px){.hero h1{font-size:32px;line-height:1.12}.hero h1 em{font-size:42px}.occupancy{top:356px}.hero>.agent-widget{top:440px}.hero-sub{max-width:270px;margin-left:auto;margin-right:auto}}
 .sustainable p{position:relative;z-index:2}.sustainable:after{top:34%;height:65px}
 @media(max-width:640px){.tools-grid{grid-template-rows:245px 285px 390px}.empire-text{max-width:150px}.empire h3{font-size:19px}.empire p{margin-bottom:17px}.sustainable:after{top:39%;height:65px}.sustainable img{height:59%}.sustainable p{margin-top:8px}.agents-panel{margin-top:35px}}
+
+/* ============================================================================
+   Responsive hardening (2026-10)
+   Measured on the live build: 0px horizontal overflow at 375-1920, but every
+   phone viewport had body copy between 5px and 15px, 32 interactive targets
+   under 44px, and two of three property cards hidden below 640px. These rules
+   fix all three without touching the desktop composition.
+   ========================================================================== */
+
+/* Stop iOS from inflating text in landscape, which breaks the layout. */
+html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
+
+/* Fluid display type: one scale from 375 to 1600 instead of hard steps. */
+.hero h1{font-size:clamp(30px,4.6vw,64px);line-height:1.06}
+.hero h1 em{font-size:clamp(36px,5.4vw,74px)}
+.section-heading h2,.center-heading h2{font-size:clamp(26px,3.2vw,43px)}
+.center-heading h2 em{font-size:clamp(30px,3.7vw,49px)}
+.section-heading p,.center-heading p,.property-copy p,.insight-choice p,.tool-card p,.dream-service p{font-size:clamp(15px,1.05vw,17px);line-height:1.6}
+.property-copy h3{font-size:clamp(16px,1.3vw,18px)}
+.property-price{font-size:clamp(20px,1.8vw,25px)}
+
+/* Rows grow with their content so longer copy is never clipped. */
+.tools-grid{grid-template-rows:minmax(260px,auto) minmax(230px,auto)}
+.insight-choice p{min-height:3.2em}
+
+/* Touch targets: 44px minimum, and enough spacing to hit accurately. */
+.nav a{padding:10px 4px;min-height:44px;display:inline-flex;align-items:center}
+.nav-brand{width:44px;height:44px}
+.carousel-controls{gap:16px}
+.circle-button{width:44px;height:44px}
+.premium-button{min-height:44px}
+.property-bottom .premium-button{min-height:40px}
+.footer-column a{min-height:36px;display:flex;align-items:center}
+.footer-social a{width:40px;height:40px}
+
+/* ---------- Mobile ---------- */
+@media(max-width:640px){
+  /* Every listing is reachable: the old rule hid first and last card,
+     leaving exactly one of three visible. */
+  .properties{grid-template-columns:1fr;gap:18px;padding:0 6px}
+  .property-card{transform:none!important}
+  .property-card:first-child,.property-card:last-child{display:block}
+
+  /* Body copy floor. iOS zooms any form control below 16px and 10px body
+     copy is unreadable on a phone. */
+  .hero-sub{font-size:16px;line-height:1.55;max-width:none;margin-left:0;margin-right:0}
+  .section-heading p,.center-heading p,.property-copy p,.insight-choice p,.tool-card p,.dream-service p{font-size:16px;line-height:1.6}
+  .insight-choice p{min-height:0}
+  .collection-link{font-size:14px}
+  .preview-note{font-size:13px;line-height:1.55}
+  .hero-brand span{font-size:12px}
+  .property-price{font-size:24px}
+  .property-price span{font-size:15px}
+  .footer-brand p{font-size:15px}
+  .footer-column h4{font-size:15px}
+  .footer-column a{font-size:16px;min-height:44px}
+  .footer-bottom{font-size:13px}
+  .footer-bottom div{gap:4px;flex-direction:column;align-items:flex-start}
+  .footer-bottom a{min-height:44px;display:inline-flex;align-items:center;font-size:14px}
+
+  /* Labels and data-viz micro-copy: raised off the floor but still small. */
+  .hero-eyebrow{font-size:10px;letter-spacing:1.6px}
+  .pill{font-size:11px;padding:7px 12px}
+  .status{font-size:12px}
+  .donut-legend{font-size:10px}
+  .donut-legend b{font-size:13px}
+  .agent-head,.agent-foot{font-size:11px}
+  .chart-days,.mini-chart-title{font-size:11px}
+  .gain{font-size:12px}
+  .revenue-caption{font-size:12px}
+  .price-tag{font-size:13px}
+  .person-tag{font-size:12px;gap:6px}
+  .person-tag .avatar{font-size:10px;width:20px;height:20px}
+  .insight-number{font-size:14px}
+  .agents-panel-title{font-size:16px}
+
+  /* Touch targets. */
+  .nav{gap:6px;padding:6px 12px}
+  .nav a{min-height:44px;padding:0 6px;font-size:13px}
+  .nav-brand{width:40px;height:40px}
+  .carousel-controls{gap:14px}
+  .circle-button{width:48px;height:48px}
+  .hero-copy .premium-button{min-height:52px;padding:0 26px;font-size:15px}
+  .property-bottom .premium-button{min-height:44px;padding:0 18px;font-size:13px}
+  .empire .premium-button{min-height:44px;padding:0 18px;font-size:13px}
+  .service-link{min-height:44px;font-size:13px}
+  .footer-social a{width:44px;height:44px;font-size:13px}
+  .insight-choice{padding:18px 16px}
+  .dialog .premium-button{min-height:48px;font-size:15px}
+
+  /* The dream band stacks its services in flow instead of pinning them to the
+     bottom of a fixed-height box, which clipped the longer headings. */
+  .dream{height:auto;display:flex;flex-direction:column;margin:20px 0 60px}
+  .dream-image{position:relative;inset:auto;width:100%;height:300px;flex:none}
+  .dream:after{display:none}
+  .dream h2{position:relative;padding:26px 16px 0;font-size:30px;line-height:1.15}
+  .dream h2 em{font-size:34px}
+  .dream-services{position:static;display:grid;grid-template-columns:1fr;gap:12px;padding:22px 14px 0}
+  .dream-service{background:var(--card);border:1px solid var(--border);backdrop-filter:none}
+  .dream-service h3{font-size:17px}
+  .dream-service p{min-height:0}
+
+  /* Bento cards: min heights so text can grow instead of overflowing. */
+  .tools-grid{grid-template-columns:1fr;grid-template-rows:none;gap:14px}
+  .tools-grid>*{grid-column:1/-1!important;grid-row:auto!important}
+  .tool-card{padding:20px}
+  .tool-card h3{font-size:20px}
+  .empire{flex-direction:column;gap:18px}
+  .empire-text{max-width:none}
+  .agents-panel{width:100%;margin:0;transform:none}
+  .sustainable img{position:relative;height:auto;width:100%;border-radius:6px;margin-top:14px}
+  .sustainable:after{display:none}
+  .price-tag{position:static;display:inline-block;margin:6px 6px 0 0}
+  .collaboration{min-height:230px}
+  .globe{left:-6%;bottom:-40px}
+  .person-one{top:110px;right:16px}
+  .person-two{top:160px;left:14px}
+  .person-three{bottom:18px;right:16px}
+}
+
+/* ---------- Small phones ---------- */
+@media(max-width:380px){
+  .nav{gap:2px;padding:5px 8px}
+  .nav a{font-size:12px;padding:0 4px}
+  .content{padding:0 16px}
+  .properties{padding:0 4px}
+}
+
+/* ---------- Landscape phones ---------- */
+@media(max-height:520px) and (orientation:landscape){
+  .hero{height:auto;min-height:420px}
+  .hero-copy{padding-top:104px}
+  .hero h1{font-size:clamp(26px,4vw,40px)}
+  .hero h1 em{font-size:clamp(30px,4.6vw,46px)}
+  .occupancy,.agent-widget{display:none}
+  .dream{height:auto}
+  .dream-image{height:240px}
+}
+
+/* ---------------------------------------------------------------------------
+   Second pass: the first block fixed phones but left desktop text at its
+   original 8-11px, and 44px min-height measured 43.6px because of subpixel
+   layout. Both are corrected here.
+   --------------------------------------------------------------------------- */
+
+/* Disclosure and supporting copy were 8-11px at every viewport. */
+.preview-note{font-size:12px;line-height:1.55}
+.collection-link{font-size:13px}
+.footer-column a{font-size:13px;min-height:32px}
+.footer-brand p{font-size:13px}
+.hero-sub{font-size:15px;line-height:1.5}
+.hero-brand span{font-size:12px}
+
+/* Clear the 44px line with room to spare against subpixel rounding. */
+.nav a{min-height:46px}
+.nav-brand{width:46px;height:46px}
+.circle-button{width:46px;height:46px;min-height:46px}
+.premium-button{min-height:46px}
+.footer-column a{min-height:38px}
+.footer-social a{width:42px;height:42px}
+.footer-bottom a{min-height:32px}
+
+/* Let the bento cards size to their content instead of clipping it. */
+.tools-grid{grid-auto-rows:minmax(240px,auto)}
+.collaboration{min-height:300px}
+.empire{min-height:250px}
+.globe{bottom:-40px}
+
+@media(max-width:640px){
+  .preview-note{font-size:13px}
+  .nav a{min-height:46px}
+  .circle-button{width:48px;height:48px}
+  .collaboration{min-height:280px}
+}
+
+/* ---------------------------------------------------------------------------
+   Third pass: 44px is required on touch viewports. Desktop may stay denser,
+   but tablets are touch, and subpixel rounding left mobile at 43.96px.
+   --------------------------------------------------------------------------- */
+.service-link{min-height:44px}
+.property-bottom .premium-button{min-height:44px}
+.empire .premium-button{min-height:44px}
+.footer-column a{min-height:44px}
+.footer-bottom a{min-height:44px}
+.footer-social a{width:44px;height:44px}
+.premium-button{min-height:46px}
+
+@media(max-width:1024px){
+  .service-link{min-height:46px;font-size:13px}
+  .property-bottom .premium-button{min-height:46px}
+  .empire .premium-button{min-height:46px}
+  .footer-column a{min-height:44px;font-size:14px}
+  .footer-bottom a{min-height:44px}
+}
+
+@media(max-width:640px){
+  .service-link{min-height:48px}
+  .property-bottom .premium-button{min-height:48px}
+  .hero-copy .premium-button{min-height:54px}
+  .dialog .premium-button{min-height:50px}
+}
