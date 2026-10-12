@@ -286,3 +286,34 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 @media(max-width:640px) and (orientation:landscape){
   .hero{height:auto;min-height:460px}
 }
+
+/* The longer sub-copy ran the full hero width and disappeared behind both
+   floating widgets on tablet and desktop. Cap it to the clear space between
+   them and keep it in its own stacking context. */
+.hero-sub{max-width:min(620px,72vw);margin-left:auto;margin-right:auto;position:relative;z-index:3}
+@media(max-width:640px){
+  /* Phones place one widget below the copy, so the full width is free here. */
+  .hero-sub{max-width:100%}
+}
+
+/* The 641-1024 band is too narrow to flank the copy with two widgets: the
+   occupancy card reached the sub-copy at 768 and both cards clipped it at
+   1024. Tablets get the same stacked hero as phones; the two-widget side
+   layout now starts only where there is genuinely room for it. */
+@media(max-width:1400px){
+  .hero{height:760px}
+  .hero:before{
+    content:'';position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(180deg,rgba(10,28,66,.32),rgba(10,28,66,.50) 52%,rgba(10,28,66,.56) 76%,var(--background));
+  }
+  .hero-copy{position:relative;z-index:2}
+  .hero-sub{max-width:100%;position:relative;z-index:3}
+  .hero>.agent-widget{display:none}
+  .occupancy{top:auto;bottom:96px;left:50%;right:auto;transform:translateX(-50%) rotate(-3deg)}
+  .hero-brand{bottom:20px;left:20px;position:absolute;z-index:2}
+}
+@media(max-width:640px){
+  .hero{height:800px}
+  .occupancy{bottom:104px}
+  .hero-brand{bottom:22px;left:18px}
+}
