@@ -23,13 +23,9 @@ dist-ssr
 # Vercel
 .vercel
 
-# Local verification screenshots
-likha-deploy-*.png
-v-*-*.png
-d-*-*.png
-g-*-*.png
-h-*-*.png
-sec-*.png
+# Local verification screenshots written to the repo root by QA passes.
+# Project imagery lives in src/assets and public, so a root-only rule is safe.
+/*.png
 responsive-evidence/
 
 # Editor directories and files
