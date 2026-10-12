@@ -263,3 +263,26 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
 /* The footer wordmark is an image-only link; give it a real tap target. */
 .footer-brand>a{display:inline-flex;align-items:center;min-height:44px}
 @media(max-width:1024px){.footer-brand>a{min-height:46px}}
+
+/* ---------------------------------------------------------------------------
+   Phone hero legibility. The sub-copy sat as white text over a bright villa
+   photo and collided with both floating widgets. Scrim behind the copy, one
+   legible widget centred below it, brand at the base.
+   --------------------------------------------------------------------------- */
+@media(max-width:640px){
+  .hero{height:800px}
+  .hero:before{
+    content:'';position:absolute;inset:0;z-index:-1;
+    background:linear-gradient(180deg,rgba(10,28,66,.34),rgba(10,28,66,.52) 52%,rgba(10,28,66,.58) 76%,var(--background));
+  }
+  .hero-copy{position:relative;z-index:2}
+  .hero-sub{position:relative;z-index:2}
+  /* The agent widget duplicates the footer panel and was the source of the
+     overlap, so phones show the occupancy widget only. */
+  .hero>.agent-widget{display:none}
+  .occupancy{top:auto;bottom:104px;left:50%;right:auto;transform:translateX(-50%) rotate(-3deg)}
+  .hero-brand{bottom:22px;left:18px;position:absolute;z-index:2}
+}
+@media(max-width:640px) and (orientation:landscape){
+  .hero{height:auto;min-height:460px}
+}
