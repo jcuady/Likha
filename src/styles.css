@@ -259,3 +259,7 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
   .hero-copy .premium-button{min-height:54px}
   .dialog .premium-button{min-height:50px}
 }
+
+/* The footer wordmark is an image-only link; give it a real tap target. */
+.footer-brand>a{display:inline-flex;align-items:center;min-height:44px}
+@media(max-width:1024px){.footer-brand>a{min-height:46px}}
