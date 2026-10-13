@@ -27,6 +27,10 @@ dist-ssr
 # Project imagery lives in src/assets and public, so a root-only rule is safe.
 /*.png
 responsive-evidence/
+.playwright-mcp/
+
+# One-off codemod/patch scripts kept while building; not part of the app.
+scripts/
 
 # Editor directories and files
 .vscode/*

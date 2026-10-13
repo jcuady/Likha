@@ -1,0 +1,228 @@
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { Check, Eye, EyeOff } from "lucide-react";
+import { toast } from "sonner";
+
+import { AuthShell } from "@/components/auth/auth-shell";
+import { Button } from "@/components/ui/button";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth, type Role } from "@/lib/auth";
+
+const schema = z.object({
+  name: z.string().min(2, "Enter your full name"),
+  email: z.string().email("Enter a valid email address"),
+  password: z
+    .string()
+    .min(8, "Use at least 8 characters")
+    .regex(/[A-Za-z]/, "Include at least one letter")
+    .regex(/[0-9]/, "Include at least one number"),
+  role: z.enum(["investor", "admin"]),
+  terms: z.boolean().refine((accepted) => accepted, "Accept the terms to continue"),
+});
+
+type FormValues = z.infer<typeof schema>;
+
+const PERKS: Record<Role, string[]> = {
+  investor: [
+    "Browse every live listing with the full rent history",
+    "Buy a share from 1% and collect rent monthly",
+    "Track income, occupancy, and payouts in one place",
+  ],
+  admin: [
+    "Publish and price listings",
+    "Approve investors and manage KYC status",
+    "Watch occupancy and distribution health",
+  ],
+};
+
+export const Route = createFileRoute("/signup")({
+  component: SignupPage,
+});
+
+function SignupPage() {
+  const { signIn } = useAuth();
+  const navigate = useNavigate();
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { name: "", email: "", password: "", role: "investor", terms: false },
+  });
+
+  const role = form.watch("role");
+
+  const onSubmit = (values: FormValues) => {
+    signIn({
+      name: values.name,
+      email: values.email,
+      role: values.role,
+      persona: values.role === "admin" ? "Administrator" : "Investor",
+    });
+    toast.success("Account created", {
+      description: `Welcome to Likha, ${values.name.split(" ")[0]}.`,
+    });
+    navigate({ to: values.role === "admin" ? "/admin" : "/app" });
+  };
+
+  return (
+    <AuthShell>
+      <div>
+        <h1 className="font-editorial text-3xl leading-tight">Create your account</h1>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Free to join. Nothing is charged until you subscribe to a listing.
+        </p>
+      </div>
+
+      <form onSubmit={form.handleSubmit(onSubmit)} noValidate className="mt-6 flex flex-col gap-4">
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="name">Full name</Label>
+          <Input
+            id="name"
+            autoComplete="name"
+            placeholder="Juan Dela Cruz"
+            aria-invalid={Boolean(form.formState.errors.name)}
+            {...form.register("name")}
+          />
+          {form.formState.errors.name ? (
+            <p role="alert" className="text-xs text-destructive">
+              {form.formState.errors.name.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            aria-invalid={Boolean(form.formState.errors.email)}
+            {...form.register("email")}
+          />
+          {form.formState.errors.email ? (
+            <p role="alert" className="text-xs text-destructive">
+              {form.formState.errors.email.message}
+            </p>
+          ) : null}
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <Label htmlFor="password">Password</Label>
+          <PasswordField
+            id="password"
+            autoComplete="new-password"
+            placeholder="At least 8 characters"
+            invalid={Boolean(form.formState.errors.password)}
+            {...form.register("password")}
+          />
+          {form.formState.errors.password ? (
+            <p role="alert" className="text-xs text-destructive">
+              {form.formState.errors.password.message}
+            </p>
+          ) : (
+            <p className="text-xs text-muted-foreground">
+              Use 8 or more characters with a letter and a number.
+            </p>
+          )}
+        </div>
+
+        <fieldset className="flex flex-col gap-2">
+          <legend className="mb-2 text-sm font-medium">I am signing up as</legend>
+          <div className="grid grid-cols-2 gap-2">
+            {(["investor", "admin"] as const).map((value) => (
+              <label
+                key={value}
+                className={`flex cursor-pointer flex-col gap-1 rounded-xl border p-3 transition-colors ${
+                  role === value
+                    ? "border-primary bg-secondary ring-1 ring-primary"
+                    : "hover:bg-secondary/60"
+                }`}
+              >
+                <input type="radio" value={value} className="sr-only" {...form.register("role")} />
+                <span className="text-sm font-medium capitalize">{value}</span>
+                <span className="text-xs text-muted-foreground">
+                  {value === "investor" ? "Buy and hold shares" : "Manage listings"}
+                </span>
+              </label>
+            ))}
+          </div>
+          <ul className="mt-2 flex flex-col gap-1.5 rounded-xl bg-secondary/50 p-3">
+            {PERKS[role].map((perk) => (
+              <li key={perk} className="flex items-start gap-2 text-xs text-muted-foreground">
+                <Check data-icon aria-hidden className="mt-0.5 size-3.5 shrink-0 text-primary" />
+                {perk}
+              </li>
+            ))}
+          </ul>
+        </fieldset>
+
+        <label htmlFor="terms" className="flex cursor-pointer items-start gap-3">
+          <Checkbox
+            id="terms"
+            className="mt-0.5"
+            checked={form.watch("terms")}
+            onCheckedChange={(checked) =>
+              form.setValue("terms", checked === true, { shouldValidate: true })
+            }
+            aria-invalid={Boolean(form.formState.errors.terms)}
+          />
+          <span className="text-xs leading-relaxed text-muted-foreground">
+            I agree to the Terms of Service and Privacy Policy, and I understand property investment
+            carries risk including possible loss of capital.
+          </span>
+        </label>
+        {form.formState.errors.terms ? (
+          <p role="alert" className="-mt-2 text-xs text-destructive">
+            {form.formState.errors.terms.message}
+          </p>
+        ) : null}
+
+        <Button type="submit" size="lg" className="w-full">
+          Create account
+        </Button>
+      </form>
+
+      <p className="mt-6 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link to="/login" className="font-medium text-foreground underline underline-offset-4">
+          Sign in
+        </Link>
+      </p>
+    </AuthShell>
+  );
+}
+
+/** Password input with a reveal toggle, used by sign-up. */
+function PasswordField({
+  id,
+  invalid,
+  ...props
+}: React.ComponentProps<"input"> & { invalid?: boolean }) {
+  const [visible, setVisible] = useState(false);
+  return (
+    <div className="relative">
+      <Input
+        id={id}
+        type={visible ? "text" : "password"}
+        className="pr-11"
+        aria-invalid={invalid}
+        {...props}
+      />
+      <Button
+        type="button"
+        variant="ghost"
+        size="icon"
+        onClick={() => setVisible((v) => !v)}
+        aria-label={visible ? "Hide password" : "Show password"}
+        className="absolute inset-y-0 right-0 w-11 rounded-none"
+      >
+        {visible ? <EyeOff data-icon /> : <Eye data-icon />}
+      </Button>
+    </div>
+  );
+}

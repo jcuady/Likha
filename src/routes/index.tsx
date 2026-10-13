@@ -5,6 +5,7 @@ import { insights, listings, services, type Listing, type ListingKey } from "@/l
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AgentWidget, MiniChart, RevenueChart } from "@/components/likha/charts";
+import { AppDownload, HowItWorks } from "@/components/landing/growth-sections";
 import hero from "@/assets/likha_villa_hero.jpg";
 import dream from "@/assets/likha_dream_house.jpg";
 import community from "@/assets/likha_community.jpg";
@@ -412,6 +413,10 @@ function Index() {
           </div>
         </section>
 
+        <HowItWorks />
+
+        <AppDownload onNotAvailable={showInfo} />
+
         <footer className="footer" id="contact">
           <div className="footer-main">
             <div className="footer-brand">
@@ -459,22 +464,13 @@ function Index() {
             <div className="footer-column">
               <h4>Products</h4>
               {[
-                "Investment Finder",
-                "Rental Yield Calculator",
-                "Portfolio Manager",
-                "Market Insights",
-                "Property Collections",
-              ].map((label) => (
-                <a
-                  key={label}
-                  href={
-                    label === "Investment Finder" || label === "Property Collections"
-                      ? "#properties"
-                      : label === "Portfolio Manager"
-                        ? "#tools"
-                        : "#insights"
-                  }
-                >
+                ["Investment Finder", "#properties"],
+                ["Rental Yield Calculator", "#insights"],
+                ["Portfolio Manager", "#tools"],
+                ["Market Insights", "#insights"],
+                ["The Likha app", "#app"],
+              ].map(([label, href]) => (
+                <a key={label} href={href}>
                   {label}
                 </a>
               ))}
@@ -502,6 +498,8 @@ function Index() {
             <div className="footer-column">
               <h4>Company</h4>
               <a href="#tools">About Likha</a>
+              <a href="/marketplace">Marketplace</a>
+              <a href="/login">Sign in</a>
               {["Partnerships", "Careers", "Contact Us"].map((label) => (
                 <a
                   key={label}
