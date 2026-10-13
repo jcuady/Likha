@@ -44,7 +44,12 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPHP } from "@/lib/currency";
-import { type Listing, type ListingStatus, listings as seed } from "@/lib/marketplace";
+import {
+  type Listing,
+  type ListingStatus,
+  listings as seed,
+  meanAvailability,
+} from "@/lib/marketplace";
 
 export const Route = createFileRoute("/admin/listings")({
   component: AdminListings,
@@ -69,7 +74,9 @@ function AdminListings() {
     });
   }, [rows, query, status]);
 
-  const openUnits = rows.reduce((sum, row) => sum + row.available, 0);
+  // A mean, never a sum. Summing a percentage per listing produced
+  // "466% of units still open", which is the exact defect this page shipped.
+  const openUnits = meanAvailability(rows);
   const totalValue = rows.reduce((sum, row) => sum + row.price, 0);
 
   const patch = (id: string, changes: Partial<Listing>, message: string) => {

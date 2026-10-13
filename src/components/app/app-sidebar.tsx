@@ -58,45 +58,53 @@ export function AppSidebar() {
       </SidebarHeader>
 
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>
-            {session?.role === "admin" ? "Operations" : "Investing"}
-          </SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {items.map((item) => {
-                const active = location.pathname === item.url;
-                return (
-                  <SidebarMenuItem key={item.url}>
-                    <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
-                      <Link to={item.url}>
-                        <item.icon />
-                        <span>{item.title}</span>
-                      </Link>
-                    </SidebarMenuButton>
-                    {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Without a nav landmark there is no way for a screen reader user to
+            jump straight to the primary navigation, which is the main reason
+            landmarks exist. */}
+        <nav aria-label="Main">
+          <SidebarGroup>
+            <SidebarGroupLabel>
+              {session?.role === "admin" ? "Operations" : "Investing"}
+            </SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {items.map((item) => {
+                  const active = location.pathname === item.url;
+                  return (
+                    <SidebarMenuItem key={item.url}>
+                      <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
+                        {/* exact:true stops TanStack prefix-matching, which would
+                          also mark /app as current while on /app/watchlist and
+                          leave two aria-current="page" links in the nav. */}
+                        <Link to={item.url} activeOptions={{ exact: true }}>
+                          <item.icon />
+                          <span>{item.title}</span>
+                        </Link>
+                      </SidebarMenuButton>
+                      {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
 
-        <SidebarGroup>
-          <SidebarGroupLabel>Discover</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton asChild tooltip="Browse listings">
-                  <Link to="/marketplace">
-                    <Sparkles />
-                    <span>Browse listings</span>
-                  </Link>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+          <SidebarGroup>
+            <SidebarGroupLabel>Discover</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                <SidebarMenuItem>
+                  <SidebarMenuButton asChild tooltip="Browse listings">
+                    <Link to="/marketplace">
+                      <Sparkles />
+                      <span>Browse listings</span>
+                    </Link>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        </nav>
       </SidebarContent>
 
       <SidebarFooter>

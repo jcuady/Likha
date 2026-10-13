@@ -496,6 +496,18 @@ export const profileFor = (email: string | undefined): InvestorProfile =>
   (email ? profiles[email] : undefined) ?? EMPTY_PROFILE;
 
 /**
+ * Mean share of units still available across a set of listings, 0-100.
+ *
+ * This is a mean and never a sum, and the reason is a bug that shipped twice:
+ * summing a percentage per listing produced the headline "466% of units still
+ * open". Summing percentages across items is meaningless, so the invariant that
+ * matters is simply that the result cannot leave 0-100 — and that is what the
+ * test asserts rather than any particular value.
+ */
+export const meanAvailability = (set: readonly Listing[]): number =>
+  set.length ? Math.round(set.reduce((sum, l) => sum + l.available, 0) / set.length) : 0;
+
+/**
  * Every listing by city, drafts included. This is the admin view: operations
  * needs to see a draft that exists in Batangas even though the public site
  * does not show it. Never use it to label public filter options.

@@ -8,6 +8,7 @@ import {
   adminBatchStats,
   batchStats,
   listings,
+  meanAvailability,
   publicCityCounts,
   publicListings,
 } from "@/lib/marketplace";
@@ -114,6 +115,36 @@ describe("public filter counts", () => {
       const actual = publicListings.filter((l) => l.city === city).length;
       expect(count, `${city} claims ${count} but the grid can show ${actual}`).toBe(actual);
     }
+  });
+});
+
+describe("availability is a mean, never a sum of percentages", () => {
+  // This defect shipped twice: once on the marketplace and again, unnoticed,
+  // on /admin/listings. The invariant is not any particular number, it is that
+  // a percentage over a set of items cannot leave 0-100.
+  it("stays inside 0-100 for every real subset of listings", () => {
+    for (const set of [
+      listings,
+      publicListings,
+      listings.filter((l) => l.city === "Makati"),
+      listings.filter((l) => l.status === "Available"),
+      listings.slice(0, 1),
+    ]) {
+      const value = meanAvailability(set);
+      expect(value, `mean over ${set.length} listings`).toBeGreaterThanOrEqual(0);
+      expect(value, `mean over ${set.length} listings`).toBeLessThanOrEqual(100);
+    }
+  });
+
+  it("returns 0 rather than NaN for an empty set", () => {
+    expect(meanAvailability([])).toBe(0);
+  });
+
+  it("would fail loudly if anyone sums instead of averaging", () => {
+    const naiveSum = publicListings.reduce((sum, l) => sum + l.available, 0);
+    // Documents why the guard above is the one that matters.
+    expect(naiveSum).toBeGreaterThan(100);
+    expect(meanAvailability(publicListings)).toBeLessThanOrEqual(100);
   });
 });
 
