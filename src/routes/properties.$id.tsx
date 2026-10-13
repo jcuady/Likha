@@ -23,6 +23,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ListingCard, StatusBadge } from "@/components/marketplace/listing-card";
 import { InvestDialog } from "@/components/marketplace/invest-dialog";
 import { formatPHP } from "@/lib/currency";
+import { absoluteUrl } from "@/lib/site";
+import { buildPropertySchema } from "@/lib/seo-schemas";
 import { listings, listingById } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/properties/$id")({
@@ -30,6 +32,31 @@ export const Route = createFileRoute("/properties/$id")({
     const listing = listingById(params.id);
     if (!listing) throw notFound();
     return { listing };
+  },
+  head: ({ loaderData }) => {
+    const listing = loaderData?.listing;
+    if (!listing) return {};
+    const url = absoluteUrl(`/properties/${listing.id}`);
+    const title = `${listing.name}, ${listing.city} | Likha`;
+    const description = buildPropertySchema(listing).description;
+    return {
+      meta: [
+        { title },
+        { name: "description", content: description },
+        { property: "og:title", content: title },
+        { property: "og:description", content: description },
+        { property: "og:url", content: url },
+        { property: "og:type", content: "website" },
+        // A draft is still reachable by direct URL but must never be indexed
+        // or shared. This is the same boundary publicListings enforces on the
+        // marketplace grid, applied here at the document level.
+        ...(listing.status === "Draft" ? [{ name: "robots", content: "noindex, nofollow" }] : []),
+      ],
+      links: [{ rel: "canonical", href: url }],
+      scripts: [
+        { type: "application/ld+json", children: JSON.stringify(buildPropertySchema(listing)) },
+      ],
+    };
   },
   component: PropertyDetailPage,
 });

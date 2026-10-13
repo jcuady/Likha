@@ -12,6 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useAuth, type Role } from "@/lib/auth";
+import { absoluteUrl } from "@/lib/site";
 
 const schema = z.object({
   name: z.string().min(2, "Enter your full name"),
@@ -41,6 +42,19 @@ const PERKS: Record<Role, string[]> = {
 };
 
 export const Route = createFileRoute("/signup")({
+  head: () => ({
+    meta: [
+      { title: "Create your Likha account" },
+      {
+        name: "description",
+        content:
+          "Open a Likha investor or admin account. Browse live listings, buy a share from 1%, and collect rent every month.",
+      },
+    { property: "og:url", content: absoluteUrl("/signup") },
+      { property: "og:title", content: "Create your Likha account" },
+    ],
+    links: [{ rel: "canonical", href: absoluteUrl("/signup") }],
+  }),
   component: SignupPage,
 });
 

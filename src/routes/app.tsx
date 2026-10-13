@@ -3,6 +3,12 @@ import { createFileRoute } from "@tanstack/react-router";
 import { AppShell, RequireAuth } from "@/components/app/app-shell";
 
 export const Route = createFileRoute("/app")({
+  // Signed-in dashboards are per-account views behind a client-side guard. They
+  // have no standalone value in search, and the root fallback canonical would
+  // otherwise point every one of them at the homepage.
+  head: () => ({
+    meta: [{ name: "robots", content: "noindex, nofollow" }],
+  }),
   component: InvestorLayout,
 });
 

@@ -6,7 +6,12 @@ import reactRefresh from "eslint-plugin-react-refresh";
 import tseslint from "typescript-eslint";
 
 export default tseslint.config(
-  { ignores: ["dist", ".output", ".vinxi"] },
+  // `.vercel/output` holds the entire built Nitro server bundle, and `scripts/`
+  // holds one-off codemods that .gitignore already excludes. Without these the
+  // ignore list, `eslint .` walks thousands of generated and scratch files and
+  // reports tens of thousands of prettier errors that have nothing to do with
+  // the app.
+  { ignores: ["dist", ".output", ".vinxi", ".vercel", ".playwright-mcp", "scripts"] },
   {
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
     files: ["**/*.{ts,tsx}"],

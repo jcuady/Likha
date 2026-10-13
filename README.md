@@ -44,6 +44,36 @@ Sign in at `/login` without a password using a persona card:
 - **New investor** (Jomar Locsin) — genuine first-run empty state
 - **Administrator** (Marisol Cruz) — operations workspace
 
+## SEO
+
+`src/lib/site.ts` holds the single origin and the brand's search-facing strings.
+`src/lib/seo-schemas.ts` builds the JSON-LD payloads, so structured data is
+generated from the same listing objects the pages render rather than typed twice.
+
+| Page | Canonical | Structured data | Indexing |
+| --- | --- | --- | --- |
+| `/` | yes | `Organization`, `WebSite`, `WebPage`, `ItemList` | index |
+| `/marketplace` | yes | `CollectionPage` + `ItemList` | index |
+| `/properties/$id` | yes | `Product` + `Offer` | index, unless the listing is a draft |
+| `/signup` | yes | site-level only | index |
+| `/login` | yes | site-level only | `noindex, follow` |
+| `/app/*`, `/admin/*` | none | site-level only | `noindex, nofollow` |
+
+Three rules are enforced rather than assumed:
+
+- **Exactly one canonical per page.** TanStack dedupes `<meta>` by name but
+  *appends* `<link>` tags, so a root-level fallback canonical alongside a
+  per-route one rendered two on every page with `/` first — collapsing the whole
+  site onto the homepage. There is no root fallback.
+- **The sitemap never lists a noindex route**, and it is asserted to contain
+  exactly the indexable routes plus every non-draft listing.
+- **No `AggregateRating`, review count or user count is ever emitted.** These
+  are asserted on the serialised payloads, not on source text.
+
+`public/sitemap.xml` and `public/robots.txt` are static files that cannot
+import `SITE`. `src/test/seo.test.ts` is the join: change the domain or add a
+listing and those tests fail instead of letting them drift.
+
 ## Where the database plugs in
 
 Each of these is the only file that changes when a backend arrives.
@@ -54,6 +84,7 @@ Each of these is the only file that changes when a backend arrives.
 | `src/lib/auth.tsx` | Session state and personas | A real provider. `signIn`, `signInAs`, `signOut` are the surface. |
 | `src/lib/watchlist.ts` | Saved listing ids | A server-backed collection. |
 | `src/lib/waitlist.ts` | Waitlist capture | A `submitWaitlist` body calling Resend, Supabase, or a webhook. |
+| `public/sitemap.xml` | Static URL list | Server-rendered from the listings query. |
 
 Everything else reads through those functions and returns plain objects.
 

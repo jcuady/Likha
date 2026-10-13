@@ -1,6 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useRef, useState, type KeyboardEvent } from "react";
 import { formatPHP } from "@/lib/currency";
+import { SITE, absoluteUrl } from "@/lib/site";
+import { buildHomeSchema } from "@/lib/seo-schemas";
+import { publicListings } from "@/lib/marketplace";
 import { insights, listings, services, type Listing, type ListingKey } from "@/lib/likha-content";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
@@ -18,21 +21,28 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       {
-        title: "Likha: Own Metro Manila property without a whole unit",
+        title: SITE.title,
       },
       {
         name: "description",
-        content:
-          "Likha pools money from Filipino investors to buy, manage, and rent out Metro Manila property. Get rental income monthly and an owned share of the building.",
+        content: SITE.description,
       },
-      { property: "og:title", content: "Likha: Own Metro Manila property without a whole unit" },
+      { property: "og:title", content: SITE.title },
       {
         property: "og:description",
-        content:
-          "Rental income every month and an owned share of the building. Likha is opening early access to Filipino investors.",
+        content: SITE.ogDescription,
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
+    ],
+    links: [{ rel: "canonical", href: absoluteUrl("/") }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(
+          buildHomeSchema(publicListings.slice(0, 4), publicListings.length),
+        ),
+      },
     ],
   }),
   component: Index,

@@ -16,6 +16,12 @@ import {
   type SortKey,
 } from "@/components/marketplace/listing-filters";
 import { batchStats, listings, publicListings } from "@/lib/marketplace";
+import { absoluteUrl } from "@/lib/site";
+import { marketplaceSchema } from "@/lib/seo-schemas";
+
+const MARKETPLACE_TITLE = "Metro Manila properties for fractional investment | Likha";
+const MARKETPLACE_DESCRIPTION =
+  "Browse every live Likha property with rent, occupancy, and gross yield. Buy a share from 1% and collect the rent monthly.";
 
 const SORTS: SortKey[] = ["featured", "yield-desc", "price-asc", "price-desc", "income-desc"];
 const isSortKey = (value: unknown): value is SortKey =>
@@ -33,6 +39,22 @@ export const Route = createFileRoute("/marketplace")({
       sort: isSortKey(sort) ? sort : undefined,
     };
   },
+  head: () => ({
+    meta: [
+      { title: MARKETPLACE_TITLE },
+      { name: "description", content: MARKETPLACE_DESCRIPTION },
+      { property: "og:title", content: MARKETPLACE_TITLE },
+      { property: "og:description", content: MARKETPLACE_DESCRIPTION },
+      { property: "og:url", content: absoluteUrl("/marketplace") },
+    ],
+    links: [{ rel: "canonical", href: absoluteUrl("/marketplace") }],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(marketplaceSchema(publicListings)),
+      },
+    ],
+  }),
   component: MarketplacePage,
 });
 

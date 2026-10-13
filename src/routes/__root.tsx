@@ -13,6 +13,8 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { AuthProvider } from "@/lib/auth";
+import { SITE, absoluteUrl } from "@/lib/site";
+import { organizationSchema } from "@/lib/seo-schemas";
 import { Toaster } from "@/components/ui/sonner";
 
 function NotFoundComponent() {
@@ -80,18 +82,23 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Likha — Property, with possibility" },
-      {
-        name: "description",
-        content: "A considered approach to property discovery and investment insights.",
-      },
-      { property: "og:title", content: "Likha — Property, with possibility" },
-      {
-        property: "og:description",
-        content: "Likha brings beautiful properties and investment insights together.",
-      },
+      { title: "Likha: Own Metro Manila property without a whole unit" },
+      { name: "description", content: SITE.description },
+      { property: "og:site_name", content: SITE.name },
+      { property: "og:locale", content: SITE.locale },
+      { property: "og:title", content: SITE.title },
+      { property: "og:description", content: SITE.ogDescription },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: `${SITE.url}/` },
+      { property: "og:image", content: absoluteUrl(SITE.ogImage) },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: SITE.ogImageAlt },
       { name: "twitter:card", content: "summary_large_image" },
+      { name: "twitter:title", content: SITE.title },
+      { name: "twitter:description", content: SITE.ogDescription },
+      { name: "twitter:image", content: absoluteUrl(SITE.ogImage) },
+      { name: "twitter:image:alt", content: SITE.ogImageAlt },
     ],
     links: [
       {
@@ -99,9 +106,22 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
+      // No canonical here on purpose. TanStack dedupes <meta> by name but
+      // appends <link> tags, so a root fallback plus a per-route one renders
+      // two canonicals on every page with "/" first, which collapses the whole
+      // site onto the homepage. Each indexable route declares its own;
+      // noindex routes (/app, /admin) correctly have none.
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;450;500;550;600;650;700&family=Instrument+Serif:ital@0;1&display=swap",
+      },
+      { rel: "preconnect", href: "https://fonts.googleapis.com" },
+      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify(organizationSchema),
       },
     ],
   }),

@@ -1,14 +1,11 @@
-User-agent: Googlebot
-Allow: /
-
-User-agent: Bingbot
-Allow: /
-
-User-agent: Twitterbot
-Allow: /
-
-User-agent: facebookexternalhit
-Allow: /
-
 User-agent: *
 Allow: /
+
+# Signed-in and sign-in surfaces are noindex in their route heads. They are
+# disallowed here so crawlers spend budget on the landing page, the marketplace
+# and the public property pages instead.
+Disallow: /app
+Disallow: /admin
+Disallow: /login
+
+Sitemap: https://likha-ten.vercel.app/sitemap.xml

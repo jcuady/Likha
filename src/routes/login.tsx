@@ -15,6 +15,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { personas, useAuth } from "@/lib/auth";
+import { absoluteUrl } from "@/lib/site";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email address"),
@@ -25,6 +26,22 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 export const Route = createFileRoute("/login")({
+  head: () => ({
+    meta: [
+      { title: "Sign in | Likha" },
+      {
+        name: "description",
+        content:
+          "Sign in to your Likha account to track your holdings, rent income, and property statements.",
+      },
+      // No value in ranking a sign-in form, and it should never compete with
+      // the sign-up page for the same query.
+      { name: "robots", content: "noindex, follow" },
+      { property: "og:url", content: absoluteUrl("/login") },
+      { property: "og:title", content: "Sign in | Likha" },
+    ],
+    links: [{ rel: "canonical", href: absoluteUrl("/login") }],
+  }),
   component: LoginPage,
 });
 
