@@ -4,7 +4,13 @@ import { extname, join } from "node:path";
 import { describe, expect, it } from "vitest";
 
 import { compactPHP } from "@/components/app/charts";
-import { listings, publicCityCounts, publicListings } from "@/lib/marketplace";
+import {
+  adminBatchStats,
+  batchStats,
+  listings,
+  publicCityCounts,
+  publicListings,
+} from "@/lib/marketplace";
 
 /**
  * Two defects this file exists to prevent, both found by reading the rendered
@@ -108,5 +114,20 @@ describe("public filter counts", () => {
       const actual = publicListings.filter((l) => l.city === city).length;
       expect(count, `${city} claims ${count} but the grid can show ${actual}`).toBe(actual);
     }
+  });
+});
+
+describe("admin and public report different universes, deliberately", () => {
+  it("gives the admin workspace every listing, drafts included", () => {
+    // The admin dashboard reads its capital and units-open cards from
+    // adminBatchStats while the sidebar, city donut and listing count all read
+    // listings.length. Mixing the two made one screen report the portfolio as
+    // both 8 and 7 with nothing to reconcile them.
+    expect(adminBatchStats.total).toBe(listings.length);
+  });
+
+  it("keeps the public batch statistics to the listings a visitor can open", () => {
+    expect(batchStats.total).toBe(publicListings.length);
+    expect(batchStats.total).toBeLessThan(adminBatchStats.total);
   });
 });

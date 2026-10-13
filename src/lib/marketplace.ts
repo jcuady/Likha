@@ -447,6 +447,7 @@ export const publicListings = listings.filter((l) => l.status !== "Draft");
  * summing the percentages across listings produces a number above 100 that
  * reads like a factual claim about the portfolio.
  */
+/** Public batch statistics: the universe a prospective investor can browse. */
 export const batchStats = (() => {
   const total = publicListings.length;
   const open = publicListings.filter((l) => l.available > 0).length;
@@ -454,6 +455,24 @@ export const batchStats = (() => {
     publicListings.reduce((sum, l) => sum + l.available, 0) / (total || 1),
   );
   const assetValue = publicListings.reduce((sum, l) => sum + l.price, 0);
+  return { total, open, averageOpen, assetValue };
+})();
+
+/**
+ * The same figures over every listing, drafts included, for the admin
+ * workspace.
+ *
+ * The admin dashboard previously read its "units open" card from the public
+ * `batchStats` while the capital card, the city donut and the sidebar all
+ * counted 8. It therefore reported the portfolio as both 8 and 7 listings with
+ * nothing to reconcile them. Operations manages drafts, so its universe is all
+ * of them.
+ */
+export const adminBatchStats = (() => {
+  const total = listings.length;
+  const open = listings.filter((l) => l.available > 0).length;
+  const averageOpen = Math.round(listings.reduce((sum, l) => sum + l.available, 0) / (total || 1));
+  const assetValue = listings.reduce((sum, l) => sum + l.price, 0);
   return { total, open, averageOpen, assetValue };
 })();
 

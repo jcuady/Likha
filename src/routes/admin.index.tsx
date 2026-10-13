@@ -10,7 +10,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import {
-  batchStats,
+  adminBatchStats,
   cityCounts,
   portfolioRentSeries,
   investors,
@@ -30,7 +30,7 @@ function AdminOverview() {
     const openUnits = publicListings.reduce((sum, l) => sum + l.available, 0);
     const capacity = publicListings.length * 100;
     const occupancy = Math.round(((capacity - openUnits) / capacity) * 100);
-    const totalValue = batchStats.assetValue;
+    const totalValue = adminBatchStats.assetValue;
     const raised = investors.reduce((sum, i) => sum + i.invested, 0);
     const pendingKyc = investors.filter((i) => i.kyc !== "Verified").length;
     const drafts = listings.filter((l) => l.status === "Draft").length;
@@ -77,13 +77,17 @@ function AdminOverview() {
           label="Occupancy"
           value={`${stats.occupancy}%`}
           delta={2.1}
-          hint="across the portfolio"
+          // Deliberately scoped to the listings that are actually offered. A
+          // draft's units are unsold rather than unlet, so folding it in would
+          // report occupancy that has not happened yet. Saying so is what stops
+          // this card disagreeing with the portfolio-wide counts beside it.
+          hint={`across the ${publicListings.length} listed properties`}
           icon={Percent}
         />
         <StatCard
           label="Avg. units open"
-          value={`${batchStats.averageOpen}%`}
-          hint={`${batchStats.open} of ${batchStats.total} still available`}
+          value={`${adminBatchStats.averageOpen}%`}
+          hint={`${adminBatchStats.open} of ${adminBatchStats.total} still available`}
           icon={Building2}
         />
       </div>
