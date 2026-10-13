@@ -7,7 +7,14 @@ export const Route = createFileRoute("/app")({
   // have no standalone value in search, and the root fallback canonical would
   // otherwise point every one of them at the homepage.
   head: () => ({
-    meta: [{ name: "robots", content: "noindex, nofollow" }],
+    meta: [
+      { name: "robots", content: "noindex, nofollow" },
+      { title: "Your portfolio | Likha" },
+      {
+        name: "description",
+        content: "Track your Likha holdings, monthly rent income, and property statements.",
+      },
+    ],
   }),
   component: InvestorLayout,
 });

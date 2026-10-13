@@ -4,7 +4,14 @@ import { AppShell, RequireAuth } from "@/components/app/app-shell";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({
-    meta: [{ name: "robots", content: "noindex, nofollow" }],
+    meta: [
+      { name: "robots", content: "noindex, nofollow" },
+      { title: "Operations | Likha Admin" },
+      {
+        name: "description",
+        content: "Manage Likha listings, investors, occupancy, and distribution health.",
+      },
+    ],
   }),
   component: AdminLayout,
 });
