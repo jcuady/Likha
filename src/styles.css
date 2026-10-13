@@ -344,10 +344,17 @@ html{-webkit-text-size-adjust:100%;text-size-adjust:100%}
    The marketing page sets its own floor and is deliberately not covered.
 --------------------------------------------------------------------------- */
 @media (max-width: 1023px) {
-  [data-touch-targets] button:not([role="radio"]):not([role="checkbox"]):not([role="switch"]) {
-    min-height: 44px;
-  }
+  [data-touch-targets] button:not([role="radio"]):not([role="checkbox"]):not([role="switch"]),
   [data-touch-targets] a[href] {
     min-height: 44px;
+  }
+  /* Dialogs and sheets render into a portal, outside [data-touch-targets], so
+     they need the floor stated separately or they regress to 36px. */
+  [role="dialog"] button:not([role="radio"]):not([role="checkbox"]),
+  [role="dialog"] input:not([type="radio"]):not([type="checkbox"]) {
+    min-height: 44px;
+  }
+  [role="dialog"] button:not([role="radio"]):not([role="checkbox"]) {
+    min-width: 44px;
   }
 }

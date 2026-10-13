@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { AgentWidget, MiniChart, RevenueChart } from "@/components/likha/charts";
 import { AppDownload, HowItWorks } from "@/components/landing/growth-sections";
+import { WaitlistDialog } from "@/components/landing/waitlist-dialog";
 import hero from "@/assets/likha_villa_hero.jpg";
 import dream from "@/assets/likha_dream_house.jpg";
 import community from "@/assets/likha_community.jpg";
@@ -96,6 +97,7 @@ function Index() {
           <a href="#home">Home</a>
           <span className="nav-dot" />
           <a href="#insights">How it works</a>
+          <a href="#properties">Listings</a>
           <a className="nav-brand" href="#home" aria-label="Likha home">
             <img src={mark} alt="Likha" />
           </a>
@@ -110,11 +112,13 @@ function Index() {
             <br />
             without buying <em>a whole unit</em>
           </h1>
-          <Button variant="premium" asChild>
-            <a href="#properties">
-              Join the early list <span className="arrow">↗</span>
-            </a>
-          </Button>
+          <WaitlistDialog
+            trigger={
+              <Button variant="premium">
+                Join the early list <span className="arrow">↗</span>
+              </Button>
+            }
+          />
           <p className="hero-sub">
             Likha pools money from Filipino investors to buy, manage, and rent out real property.
             You collect rent every month and own a share of the building.
@@ -398,11 +402,13 @@ function Index() {
                   property.
                 </h3>
                 <p>Add another whenever you want. Same dashboard, same statements, same manager.</p>
-                <Button variant="premium" asChild>
-                  <a href="#properties">
-                    Join the early list <span className="arrow">↗</span>
-                  </a>
-                </Button>
+                <WaitlistDialog
+                  trigger={
+                    <Button variant="premium">
+                      Join the early list <span className="arrow">↗</span>
+                    </Button>
+                  }
+                />
               </div>
               <div className="agents-panel">
                 <div className="agents-panel-title">Recent closings</div>
