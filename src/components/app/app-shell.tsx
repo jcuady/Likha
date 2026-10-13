@@ -84,7 +84,12 @@ export function AppShell({ role }: { role: "investor" | "admin" }) {
           provider while still scoping the touch-target floor to this surface. */}
       <div data-touch-targets="" className="contents">
         <AppSidebar />
-        <SidebarInset>
+        {/* min-w-0: the inset is a flex item, so its default min-width:auto lets
+            it stay at its content's intrinsic width instead of shrinking. At
+            exactly the md breakpoint (768px) the sidebar is expanded to 256px,
+            leaving 512px, and the inset held 561px — 49px of horizontal
+            overflow on every dashboard with a table or chart. */}
+        <SidebarInset className="min-w-0">
           <header
             data-app-header
             className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b bg-card/80 px-4 backdrop-blur-md md:px-6"
