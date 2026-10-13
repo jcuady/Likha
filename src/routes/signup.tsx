@@ -50,7 +50,7 @@ export const Route = createFileRoute("/signup")({
         content:
           "Open a Likha investor or admin account. Browse live listings, buy a share from 1%, and collect rent every month.",
       },
-    { property: "og:url", content: absoluteUrl("/signup") },
+      { property: "og:url", content: absoluteUrl("/signup") },
       { property: "og:title", content: "Create your Likha account" },
     ],
     links: [{ rel: "canonical", href: absoluteUrl("/signup") }],

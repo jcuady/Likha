@@ -476,7 +476,25 @@ export const EMPTY_PROFILE: InvestorProfile = { holdings: [], transactions: [] }
 export const profileFor = (email: string | undefined): InvestorProfile =>
   (email ? profiles[email] : undefined) ?? EMPTY_PROFILE;
 
+/**
+ * Every listing by city, drafts included. This is the admin view: operations
+ * needs to see a draft that exists in Batangas even though the public site
+ * does not show it. Never use it to label public filter options.
+ */
 export const cityCounts = listings.reduce<Record<string, number>>((acc, l) => {
+  acc[l.city] = (acc[l.city] ?? 0) + 1;
+  return acc;
+}, {});
+
+/**
+ * Listings by city as the public site sees them, drafts excluded.
+ *
+ * The marketplace filter used to label its options from `cityCounts`, so it
+ * advertised "Batangas (2)" and then rendered one result. A filter that counts
+ * a listing the grid will never show is a draft leak in a different costume,
+ * and it also tells a visitor that unpublished inventory exists.
+ */
+export const publicCityCounts = publicListings.reduce<Record<string, number>>((acc, l) => {
   acc[l.city] = (acc[l.city] ?? 0) + 1;
   return acc;
 }, {});

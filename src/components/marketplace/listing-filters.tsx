@@ -13,7 +13,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Slider } from "@/components/ui/slider";
-import { cityCounts, publicListings, type ListingStatus, type Listing } from "@/lib/marketplace";
+import {
+  publicCityCounts,
+  publicListings,
+  type ListingStatus,
+  type Listing,
+} from "@/lib/marketplace";
 
 export type SortKey = "featured" | "yield-desc" | "price-asc" | "price-desc" | "income-desc";
 
@@ -60,7 +65,7 @@ export function resolveQuery(search: MarketplaceSearch): MarketplaceQuery {
 // Draft never reaches the public marketplace, so it is not a filter option here.
 const statuses: ListingStatus[] = ["Available", "Under Offer", "Fully Subscribed"];
 const types = Array.from(new Set(publicListings.map((l) => l.type)));
-const cities = Object.keys(cityCounts).sort();
+const cities = Object.keys(publicCityCounts).sort();
 
 export function applyFilters(
   query: MarketplaceQuery,
@@ -152,7 +157,7 @@ export function ListingFilters({
               { value: "all", label: "All cities" },
               ...cities.map((city) => ({
                 value: city,
-                label: `${city} (${cityCounts[city]})`,
+                label: `${city} (${publicCityCounts[city]})`,
               })),
             ]}
           />

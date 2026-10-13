@@ -164,7 +164,7 @@ function AdminOverview() {
                   <div className="min-w-0">
                     <p className="truncate text-sm font-medium">{listing.name}</p>
                     <p className="truncate text-xs text-muted-foreground">
-                      {listing.location} Â· {listing.investors} investors
+                      {listing.location} · {listing.investors} investors
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-3">

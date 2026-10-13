@@ -98,7 +98,7 @@ function AdminAnalytics() {
         />
         <StatCard
           label="Best performer"
-          value={topListing ? `${topListing.yield.toFixed(1)}%` : "â€”"}
+          value={topListing ? `${topListing.yield.toFixed(1)}%` : "—"}
           hint={topListing?.name ?? "No listings"}
           icon={BarChart3}
         />

@@ -19,10 +19,10 @@ import {
 } from "@/components/ui/chart";
 import { formatPHP } from "@/lib/currency";
 
-/** Compact peso axis label: â‚±1.2M rather than â‚±1,245,000. */
+/** Compact peso axis label: \u20b11.2M rather than \u20b11,245,000. */
 export function compactPHP(value: number): string {
-  if (Math.abs(value) >= 1_000_000) return `â‚±${(value / 1_000_000).toFixed(1)}M`;
-  if (Math.abs(value) >= 1_000) return `â‚±${Math.round(value / 1_000)}k`;
+  if (Math.abs(value) >= 1_000_000) return `\u20b1${(value / 1_000_000).toFixed(1)}M`;
+  if (Math.abs(value) >= 1_000) return `\u20b1${Math.round(value / 1_000)}k`;
   return formatPHP(value);
 }
 
