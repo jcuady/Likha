@@ -99,6 +99,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: SITE.ogDescription },
       { name: "twitter:image", content: absoluteUrl(SITE.ogImage) },
       { name: "twitter:image:alt", content: SITE.ogImageAlt },
+      // PWA / install metadata. theme-color has to live in a <meta> tag for
+      // Android and Safari to tint the browser chrome on install; the manifest
+      // alone is not enough.
+      { name: "theme-color", content: SITE.themeColor },
+      { name: "apple-mobile-web-app-capable", content: "yes" },
+      { name: "mobile-web-app-capable", content: "yes" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-title", content: SITE.shortName },
     ],
     links: [
       {
@@ -106,6 +114,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         href: appCss,
       },
       { rel: "icon", href: "/favicon.png", type: "image/png" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
+      { rel: "manifest", href: "/manifest.webmanifest" },
       // No canonical here on purpose. TanStack dedupes <meta> by name but
       // appends <link> tags, so a root fallback plus a per-route one renders
       // two canonicals on every page with "/" first, which collapses the whole

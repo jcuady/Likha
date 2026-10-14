@@ -106,33 +106,29 @@ function Index() {
         <nav className="nav" aria-label="Main navigation">
           <a href="#home">Home</a>
           <span className="nav-dot" />
-          <a href="#insights">How it works</a>
-          <a href="#properties">Listings</a>
+          <a href="#insights">Features</a>
           <a className="nav-brand" href="#home" aria-label="Likha home">
             <img src={mark} alt="Likha" />
           </a>
-          <a href="#tools">Portfolio</a>
+          <a href="#properties">About</a>
           <span className="nav-dot" />
           <a href="#contact">Contact</a>
         </nav>
         <div className="hero-copy">
-          <p className="hero-eyebrow">LIKHA · METRO MANILA PROPERTY</p>
+          <p className="hero-eyebrow">LIKHA · PROPERTY, WITH POSSIBILITY</p>
           <h1>
-            Own Metro Manila property
+            Discover high-growth
             <br />
-            without buying <em>a whole unit</em>
+            property <em>investments</em>
           </h1>
           <WaitlistDialog
             trigger={
               <Button variant="premium">
-                Join the early list <span className="arrow">↗</span>
+                Start investing now <span className="arrow">↗</span>
               </Button>
             }
           />
-          <p className="hero-sub">
-            Likha pools money from Filipino investors to buy, manage, and rent out real property.
-            You collect rent every month and own a share of the building.
-          </p>
+          <p className="hero-sub">Exceptional homes. A more considered way to invest.</p>
         </div>
         <div className="occupancy">
           <div className="widget-label">
@@ -163,7 +159,7 @@ function Index() {
         <AgentWidget />
         <div className="hero-brand">
           <img src={logo} alt="Likha" />
-          <span>Property investing, open to more Filipinos.</span>
+          <span>A new perspective on property.</span>
         </div>
       </section>
 

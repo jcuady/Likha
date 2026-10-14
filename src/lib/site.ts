@@ -14,16 +14,23 @@ export const SITE = {
   /** Bare origin, no trailing slash. */
   url: "https://likha-ten.vercel.app",
   name: "Likha",
-  title: "Likha: Own Metro Manila property without a whole unit",
+  title: "Discover high-growth property investments | Likha",
   description:
-    "Likha pools money from Filipino investors to buy, manage, and rent out Metro Manila property. Get rental income monthly and an owned share of the building.",
+    "Likha pools money from Filipino investors to buy, manage, and rent out Metro Manila property. Buy a share from 1% and collect the rent every month.",
   ogDescription:
-    "Rental income every month and an owned share of the building. Likha is opening early access to Filipino investors.",
+    "Exceptional homes. A more considered way to invest. Rental income every month and an owned share of the building.",
   /** 1200x630, authored from the live brand fonts and hero photograph. */
   ogImage: "/og-image.jpg",
   ogImageAlt:
-    "Likha: own Metro Manila property without buying a whole unit. 7 live listings, 4 to 6.5% gross annual yield.",
+    "Likha: discover high-growth property investments. 7 live listings, 4 to 6.5% gross annual yield.",
   locale: "en_PH",
+  /** Install name, matches manifest.short_name and the iOS home-screen title. */
+  shortName: "Likha",
+  /** Brand blue, sampled from the mark itself. Kept here so the manifest,
+   *  theme-color meta and the icon script cannot drift apart silently. */
+  themeColor: "#0562EE",
+  /** Matches .brand-mark background in src/styles.css. */
+  backgroundColor: "#FFFFFF",
 } as const;
 
 /** Absolute URL for a site-relative path such as "/og-image.jpg". */

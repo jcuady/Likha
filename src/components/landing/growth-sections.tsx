@@ -1,5 +1,7 @@
-import { Apple, Play, ShieldCheck, Wallet, Building2 } from "lucide-react";
+import { ShieldCheck, Wallet, Building2 } from "lucide-react";
 
+import appleMark from "@/assets/brand/apple.svg";
+import googlePlayMark from "@/assets/brand/google-play.svg";
 import { PhoneMockup } from "@/components/brand/phone-mockup";
 import { Button } from "@/components/ui/button";
 
@@ -102,7 +104,7 @@ export function AppDownload({
 
               <div className="mt-8 flex flex-wrap gap-3">
                 <StoreButton
-                  icon={Apple}
+                  mark={appleMark}
                   label="App Store"
                   sub="iOS"
                   onClick={() =>
@@ -113,7 +115,7 @@ export function AppDownload({
                   }
                 />
                 <StoreButton
-                  icon={Play}
+                  mark={googlePlayMark}
                   label="Google Play"
                   sub="Android"
                   onClick={() =>
@@ -141,12 +143,13 @@ export function AppDownload({
 }
 
 function StoreButton({
-  icon: Icon,
+  mark,
   label,
   sub,
   onClick,
 }: {
-  icon: typeof Apple;
+  /** Official store mark. Both platforms require their own logo artwork. */
+  mark: string;
   label: string;
   sub: string;
   onClick: () => void;
@@ -158,7 +161,11 @@ function StoreButton({
       onClick={onClick}
       className="h-auto gap-3 border-white/20 bg-white/10 px-5 py-3 text-white hover:bg-white/15"
     >
-      <Icon data-icon aria-hidden className="size-6 text-white" />
+      {/* data-icon marks this as the button's icon so shared variants can size
+          it, rather than hard-coding a class on the image itself. */}
+      <span data-icon aria-hidden className="grid size-7 place-items-center">
+        <img src={mark} alt="" width={24} height={24} className="size-6 object-contain" />
+      </span>
       <span className="flex flex-col items-start leading-tight">
         <span className="text-[10px] uppercase tracking-wider text-white/60">{sub}</span>
         <span className="text-sm font-medium">{label}</span>

@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" role="img" aria-label="Google Play">
+  <title>Google Play</title>
+  <!--
+    Four-colour Google Play mark. Each wedge is the real brand colour, and the
+    gradient in the leading edge is what makes the mark read as folded paper
+    rather than a flat triangle.
+  -->
+  <defs>
+    <linearGradient id="gp-a" x1="21.5" y1="6.2" x2="4.4" y2="21.9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#00A0FF"/>
+      <stop offset=".007" stop-color="#00A1FF"/>
+      <stop offset=".26" stop-color="#00BEFF"/>
+      <stop offset=".512" stop-color="#00D2FF"/>
+      <stop offset=".76" stop-color="#00DFFF"/>
+      <stop offset="1" stop-color="#00E3FF"/>
+    </linearGradient>
+    <linearGradient id="gp-b" x1="17.6" y1="14.7" x2="4.4" y2="21.9" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFE000"/>
+      <stop offset=".409" stop-color="#FFBD00"/>
+      <stop offset=".775" stop-color="#FFA500"/>
+      <stop offset="1" stop-color="#FF9C00"/>
+    </linearGradient>
+    <linearGradient id="gp-c" x1="22.4" y1="12" x2="11.7" y2="3.7" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF3A44"/>
+      <stop offset="1" stop-color="#C31162"/>
+    </linearGradient>
+    <linearGradient id="gp-d" x1="22.4" y1="12" x2="11.7" y2="20.3" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FF3A44"/>
+      <stop offset="1" stop-color="#C31162"/>
+    </linearGradient>
+  </defs>
+  <path fill="url(#gp-a)" d="M1.6 1.5c-.4.4-.6.9-.6 1.6v17.8c0 .7.2 1.2.6 1.6l.1.1L11.5 12.7v-.2L1.7 1.4l-.1.1z"/>
+  <path fill="url(#gp-b)" d="M15.1 16.3 11.5 12.7v-.2l3.6-3.6.1.1 4.3 2.4c1.2.7 1.2 1.8 0 2.5l-4.3 2.4-.1.1z"/>
+  <path fill="url(#gp-c)" d="M15.1 16.3 11.5 12.7 1.6 22.6c.4.4 1 .4 1.8.1l11.7-6.4z"/>
+  <path fill="url(#gp-d)" d="M15.1 7.7 3.4 1.3c-.8-.4-1.4-.3-1.8.1l9.9 9.9 3.6-3.6z"/>
+</svg>

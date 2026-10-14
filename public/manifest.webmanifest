@@ -1,0 +1,39 @@
+{
+  "name": "Likha - Metro Manila property, without a whole unit",
+  "short_name": "Likha",
+  "description": "Discover high-growth property investments in Metro Manila. Exceptional homes, a more considered way to invest.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FFFFFF",
+  "theme_color": "#0562EE",
+  "categories": ["finance", "business", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Browse properties",
+      "short_name": "Marketplace",
+      "url": "/marketplace"
+    }
+  ]
+}
