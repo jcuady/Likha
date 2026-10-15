@@ -92,6 +92,15 @@ account") are exempt under WCAG 2.5.8 and are not defects.
 | `app.index.tsx` | Holdings table had 5 headers over 6 cells, so location sat under "Share" and ownership % sat under "Yield"; the income column had no header | 6 heads over 6 cells, relabelled |
 | `nav-config.ts` | A badge count had no accessible name tying it to its nav item | `aria-label` added |
 
+| Inline text links | "New to Likha? Create an account" rendered 19px | Not a defect | WCAG 2.5.8 exempts targets inline in a sentence |
+
+### Security headers
+
+Vercel's defaults left `X-Content-Type-Options`, `Referrer-Policy` and
+`Permissions-Policy` unset. `vercel.json` now sets `nosniff`, `DENY` framing,
+a strict referrer policy, a restrictive permissions policy, and HSTS. All five
+verified present on the deployed origin.
+
 ---
 
 ## Backend / API Issues
