@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -53,15 +53,34 @@ export function InvestDialog({ listing, trigger }: { listing: Listing; trigger: 
   const maxShare = Math.max(1, listing.available);
   const closed = listing.available === 0;
 
+  const timers = useRef<number[]>([]);
+
+  const clearTimers = () => {
+    for (const id of timers.current) window.clearTimeout(id);
+    timers.current = [];
+  };
+
   const startConfirm = () => {
     setStep("confirming");
-    window.setTimeout(() => setStep("done"), 900);
+    timers.current.push(window.setTimeout(() => setStep("done"), 900));
   };
 
   const onOpenChange = (next: boolean) => {
     setOpen(next);
-    if (!next) window.setTimeout(() => setStep("configure"), 200);
+    // Cancel before resetting, not after. Two independent timers used to race:
+    // cancel during "confirming" ran the 200ms reset, then the still-live 900ms
+    // timer fired and set the step to "done" anyway. The dialog was closed so
+    // nothing was visible, but reopening showed "Subscription recorded" for a
+    // purchase the visitor had cancelled.
+    if (!next) {
+      clearTimers();
+      timers.current.push(window.setTimeout(() => setStep("configure"), 200));
+    }
   };
+
+  // A pending timer firing into an unmounted component is the same defect
+  // arriving by a different route.
+  useEffect(() => clearTimers, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

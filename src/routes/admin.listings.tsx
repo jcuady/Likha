@@ -4,6 +4,16 @@ import { Check, MoreHorizontal, Pencil, Plus, Search, Send, Trash2 } from "lucid
 import { toast } from "sonner";
 
 import { PageHeader } from "@/components/app/app-shell";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -45,11 +55,13 @@ import {
 } from "@/components/ui/table";
 import { formatPHP } from "@/lib/currency";
 import {
+  grossYield,
   type Listing,
   type ListingStatus,
   listings as seed,
   meanAvailability,
 } from "@/lib/marketplace";
+import { useAdminData } from "@/lib/admin-store";
 
 export const Route = createFileRoute("/admin/listings")({
   component: AdminListings,
@@ -58,11 +70,15 @@ export const Route = createFileRoute("/admin/listings")({
 type Draft = { id: string; name: string; price: string; rent: string; status: ListingStatus };
 
 function AdminListings() {
-  const [rows, setRows] = useState<Listing[]>(seed);
+  // Rows live in the shared admin store, not in this component. They used to be
+  // local state, which meant the sidebar count could not see them, and any edit
+  // was discarded the moment the admin navigated to another page.
+  const { listings: rows, patchListing, addListing, removeListing } = useAdminData();
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
   const [editing, setEditing] = useState<Draft | null>(null);
   const [creating, setCreating] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState<Listing | null>(null);
   const fallbackImage = seed[0]?.image ?? "";
 
   const filtered = useMemo(() => {
@@ -80,7 +96,7 @@ function AdminListings() {
   const totalValue = rows.reduce((sum, row) => sum + row.price, 0);
 
   const patch = (id: string, changes: Partial<Listing>, message: string) => {
-    setRows((current) => current.map((row) => (row.id === id ? { ...row, ...changes } : row)));
+    patchListing(id, changes);
     toast.success(message);
   };
 
@@ -94,7 +110,16 @@ function AdminListings() {
     }
     patch(
       editing.id,
-      { name: editing.name.trim() || "Untitled", price, rent, status: editing.status },
+      {
+        name: editing.name.trim() || "Untitled",
+        price,
+        rent,
+        // Recomputed, never left behind. The dialog previews this same figure
+        // while you type, so storing an old one made the table contradict the
+        // form that had just produced it.
+        yield: grossYield(price, rent),
+        status: editing.status,
+      },
       `${editing.name} updated`,
     );
     setEditing(null);
@@ -120,35 +145,33 @@ function AdminListings() {
       toast.error("A new listing needs a price and a rent before it can be saved");
       return;
     }
-    setRows((current) => [
-      ...current,
-      {
-        id: editing.id,
-        name: editing.name.trim() || "New listing",
-        location: "Location to be confirmed",
-        city: "Taguig",
-        description: "Description pending review.",
-        price,
-        rent,
-        status: editing.status,
-        beds: 2,
-        baths: 2,
-        area: 90,
-        yield: Number(((rent * 12 * 100) / price).toFixed(1)),
-        available: 100,
-        investors: 0,
-        image: fallbackImage,
-        type: "Condo",
-        amenities: [],
-      },
-    ]);
+    addListing({
+      id: editing.id,
+      name: editing.name.trim() || "New listing",
+      location: "Location to be confirmed",
+      city: "Taguig",
+      description: "Description pending review.",
+      price,
+      rent,
+      status: editing.status,
+      beds: 2,
+      baths: 2,
+      area: 90,
+      yield: grossYield(price, rent),
+      available: 100,
+      investors: 0,
+      image: fallbackImage,
+      type: "Condo",
+      amenities: [],
+    });
     toast.success(`${editing.name} created as ${editing.status}`);
     setEditing(null);
     setCreating(false);
   };
 
   const remove = (listing: Listing) => {
-    setRows((current) => current.filter((row) => row.id !== listing.id));
+    removeListing(listing.id);
+    setConfirmRemove(null);
     toast.success(`${listing.name} removed`, { description: "Only from this demo session." });
   };
 
@@ -322,7 +345,7 @@ function AdminListings() {
                           <DropdownMenuSeparator />
                           <DropdownMenuItem
                             className="text-destructive focus:bg-destructive/10 focus:text-destructive"
-                            onSelect={() => remove(listing)}
+                            onSelect={() => setConfirmRemove(listing)}
                           >
                             <Trash2 data-icon aria-hidden />
                             Remove
@@ -410,7 +433,7 @@ function AdminListings() {
                 <span className="font-medium text-foreground">
                   {((Number(editing.rent) * 12 * 100) / Number(editing.price) || 0).toFixed(1)}%
                 </span>
-                . Every open listing above 4.0% passes review.
+                . Review compares this figure against the batch median.
               </p>
             ) : null}
 
@@ -452,6 +475,29 @@ function AdminListings() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      {/* Removing a listing used to fire on a single dropdown click with the
+          confirmation arriving afterwards as a toast, which is a confirmation
+          of something already done. The prompt names the row first. */}
+      <AlertDialog
+        open={Boolean(confirmRemove)}
+        onOpenChange={(open) => !open && setConfirmRemove(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove {confirmRemove?.name}?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This takes the listing out of the batch and every screen that counts it. It cannot be
+              undone, and it affects this browser session only.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Keep it</AlertDialogCancel>
+            <AlertDialogAction onClick={() => confirmRemove && remove(confirmRemove)}>
+              Remove listing
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

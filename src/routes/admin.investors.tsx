@@ -38,7 +38,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { formatPHP } from "@/lib/currency";
-import { type InvestorRow, investors as seed } from "@/lib/marketplace";
+import { useAdminData } from "@/lib/admin-store";
+import { type InvestorRow } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/admin/investors")({
   component: AdminInvestors,
@@ -57,9 +58,10 @@ export function KycBadge({ state }: { state: InvestorRow["kyc"] }) {
 }
 
 function AdminInvestors() {
-  const [rows, setRows] = useState<InvestorRow[]>(seed);
+  const { investors: rows, addInvestor, patchInvestor } = useAdminData();
   const [query, setQuery] = useState("");
   const [kyc, setKyc] = useState("all");
+  const [inviteOpen, setInviteOpen] = useState(false);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -75,7 +77,7 @@ function AdminInvestors() {
   const verified = rows.length - pending;
 
   const setState = (id: string, next: InvestorRow["kyc"], name: string) => {
-    setRows((current) => current.map((row) => (row.id === id ? { ...row, kyc: next } : row)));
+    patchInvestor(id, { kyc: next });
     toast.success(`${name} marked ${next.toLowerCase()}`);
   };
 
@@ -85,7 +87,7 @@ function AdminInvestors() {
         title="Investors"
         description={`${rows.length} accounts · ${verified} fully verified · ${formatPHP(capital)} deployed`}
         actions={
-          <Dialog>
+          <Dialog open={inviteOpen} onOpenChange={setInviteOpen}>
             <DialogTrigger asChild>
               <Button>
                 <UserPlus data-icon aria-hidden />
@@ -95,22 +97,22 @@ function AdminInvestors() {
             <DialogContent className="sm:max-w-md">
               <InviteDialog
                 onInvite={(name, email) => {
-                  setRows((current) => [
-                    ...current,
-                    {
-                      id: `in-${String(current.length + 1).padStart(2, "0")}`,
-                      name,
-                      email,
-                      invested: 0,
-                      holdings: 0,
-                      joined: new Date().toISOString().slice(0, 10),
-                      kyc: "Not started",
-                    },
-                  ]);
+                  addInvestor({
+                    // Derived from the row count, not a running counter: a
+                    // counter would collide the moment a row is ever removed.
+                    id: `in-${String(rows.length + 1).padStart(2, "0")}`,
+                    name,
+                    email,
+                    invested: 0,
+                    holdings: 0,
+                    joined: new Date().toISOString().slice(0, 10),
+                    kyc: "Not started",
+                  });
                   toast.success(`Invite prepared for ${email}`, {
                     description:
                       "Sending is not connected yet. The account exists in this session.",
                   });
+                  setInviteOpen(false);
                 }}
               />
             </DialogContent>
@@ -123,8 +125,10 @@ function AdminInvestors() {
         <StatCard
           label="Capital deployed"
           value={formatPHP(capital)}
-          delta={11.4}
-          hint="vs. last month"
+          // No delta and no "vs. last month": investors carry no date series,
+          // so this figure cannot be compared to a previous month. The arrow
+          // would have implied a trend that no data supports.
+          hint="Sum of subscribed capital"
         />
         <StatCard
           label="Awaiting KYC"

@@ -28,7 +28,13 @@ import {
 } from "@/components/ui/table";
 import { useAuth } from "@/lib/auth";
 import { formatPHP } from "@/lib/currency";
-import { incomeSeries, listingById, portfolioSeries, profileFor } from "@/lib/marketplace";
+import {
+  incomeSeries,
+  listingById,
+  monthOverMonth,
+  portfolioSeries,
+  profileFor,
+} from "@/lib/marketplace";
 
 export const Route = createFileRoute("/app/")({
   component: InvestorOverview,
@@ -97,7 +103,7 @@ function InvestorOverview() {
         <StatCard
           label="Portfolio value"
           value={formatPHP(currentValue)}
-          delta={7.5}
+          delta={monthOverMonth(portfolioSeries)}
           hint="vs. last month"
           icon={Wallet}
         />
@@ -105,8 +111,8 @@ function InvestorOverview() {
         <StatCard
           label="Income this month"
           value={formatPHP(monthIncome)}
-          delta={6.4}
-          hint="vs. Sept"
+          delta={monthOverMonth(incomeSeries)}
+          hint="vs. last month"
         />
         <StatCard label="Average yield" value={`${avgYield.toFixed(1)}%`} icon={TrendingUp} />
       </div>
@@ -158,11 +164,16 @@ function InvestorOverview() {
             <Table>
               <TableHeader>
                 <TableRow>
+                  {/* Six cells below, six heads here. They were five heads
+                      against six cells, so the location sat under "Share" and
+                      the investor's ownership percentage sat under "Yield",
+                      and the monthly income column had no head at all. */}
                   <TableHead>Property</TableHead>
-                  <TableHead>Share</TableHead>
-                  <TableHead>Yield</TableHead>
+                  <TableHead>Location</TableHead>
+                  <TableHead>Your share</TableHead>
                   <TableHead className="text-right">Invested</TableHead>
-                  <TableHead className="text-right">Monthly</TableHead>
+                  <TableHead className="text-right">Gross yield</TableHead>
+                  <TableHead className="text-right">Your income</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -247,15 +258,7 @@ function InvestorOverview() {
             <CardDescription>Scheduled</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-col gap-4">
-            <div className="flex items-center gap-3 rounded-xl border bg-secondary/40 p-4">
-              <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-card">
-                <CalendarDays data-icon aria-hidden className="size-5 text-primary" />
-              </span>
-              <div>
-                <p className="font-editorial text-2xl leading-none">31 Oct</p>
-                <p className="mt-1 text-xs text-muted-foreground">in 12 days</p>
-              </div>
-            </div>
+            <DistributionCard />
             <p className="text-sm leading-relaxed text-muted-foreground">
               Distributions are paid on the last day of each month for the previous month&rsquo;s
               collected rent, after management fees and repairs.
@@ -267,6 +270,45 @@ function InvestorOverview() {
         </Card>
       </div>
     </>
+  );
+}
+
+/**
+ * Next distribution date, computed rather than typed.
+ *
+ * This card shipped the literal "31 Oct / in 12 days" beside a sentence saying
+ * distributions are paid on the last day of each month. Two problems: it was
+ * already 4 days wrong when written, and it was wrong forever after, because in
+ * November it still read 31 Oct. The rule in the paragraph below the card is
+ * the specification, so the card now derives from it.
+ */
+function DistributionCard() {
+  const now = new Date();
+  const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  // Midnight-normalised: at 09:00 today a same-day countdown should read 0, not
+  // a fraction of a day rounded the wrong way.
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const days = Math.max(
+    0,
+    Math.round((endOfMonth.getTime() - startOfToday.getTime()) / 86_400_000),
+  );
+  const label = endOfMonth.toLocaleDateString("en-GB", {
+    day: "numeric",
+    month: "short",
+  });
+
+  return (
+    <div className="flex items-center gap-3 rounded-xl border bg-secondary/40 p-4">
+      <span className="grid size-10 shrink-0 place-items-center rounded-lg bg-card">
+        <CalendarDays data-icon aria-hidden className="size-5 text-primary" />
+      </span>
+      <div>
+        <p className="font-editorial text-2xl leading-none">{label}</p>
+        <p className="mt-1 text-xs text-muted-foreground">
+          {days === 0 ? "today" : days === 1 ? "tomorrow" : `in ${days} days`}
+        </p>
+      </div>
+    </div>
   );
 }
 

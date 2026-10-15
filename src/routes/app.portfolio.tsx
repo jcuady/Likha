@@ -23,7 +23,13 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/lib/auth";
 import { formatPHP } from "@/lib/currency";
-import { incomeSeries, listingById, portfolioSeries, profileFor } from "@/lib/marketplace";
+import {
+  incomeSeries,
+  listingById,
+  monthOverMonth,
+  portfolioSeries,
+  profileFor,
+} from "@/lib/marketplace";
 
 export const Route = createFileRoute("/app/portfolio")({
   component: PortfolioPage,
@@ -105,8 +111,8 @@ function PortfolioPage() {
         <StatCard
           label="Monthly income"
           value={formatPHP(monthlyIncome)}
-          delta={6.4}
-          hint="vs. Sept"
+          delta={monthOverMonth(incomeSeries)}
+          hint="vs. last month"
         />
         <StatCard
           label="Properties held"

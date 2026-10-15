@@ -19,6 +19,19 @@ export type Persona = {
 };
 
 const STORAGE_KEY = "likha.session";
+/**
+ * Two stores, one key. `remember: false` means the session should not outlive
+ * the tab, which in a browser-only build is the only honest translation of
+ * "keep me signed in": localStorage survives a browser restart, sessionStorage
+ * does not. The checkbox used to be registered, validated and rendered, and
+ * then never read, so unchecking it changed nothing.
+ *
+ * Resolved through a function rather than a module constant: this module is
+ * evaluated during SSR, where `window` does not exist, and touching it at
+ * import time made every route return a 500.
+ */
+const stores = (): Storage[] =>
+  typeof window === "undefined" ? [] : [window.localStorage, window.sessionStorage];
 
 /**
  * Demo personas. The sign-in page renders these as one-click cards so the app
@@ -66,8 +79,8 @@ export const personas: Persona[] = [
 
 type AuthContextValue = {
   session: Session | null;
-  signIn: (session: Session) => void;
-  signInAs: (personaId: string) => void;
+  signIn: (session: Session, remember?: boolean) => void;
+  signInAs: (personaId: string, remember?: boolean) => void;
   signOut: () => void;
   ready: boolean;
 };
@@ -76,12 +89,16 @@ const AuthContext = createContext<AuthContextValue | null>(null);
 
 function readStored(): Session | null {
   if (typeof window === "undefined") return null;
-  try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
-    return raw ? (JSON.parse(raw) as Session) : null;
-  } catch {
-    return null;
+  for (const store of stores()) {
+    try {
+      const raw = store.getItem(STORAGE_KEY);
+      if (raw) return JSON.parse(raw) as Session;
+    } catch {
+      // A store that throws (private browsing, disabled storage) is skipped
+      // rather than fatal: the other one may still hold a usable session.
+    }
   }
+  return null;
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -95,29 +112,41 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setReady(true);
   }, []);
 
-  const signIn = useCallback((next: Session) => {
+  const signIn = useCallback((next: Session, remember = true) => {
     setSession(next);
+    // Clear both first so flipping the checkbox cannot leave a stale copy in
+    // the store the user just declined to use.
+    for (const store of stores()) {
+      try {
+        store.removeItem(STORAGE_KEY);
+      } catch {
+        // Nothing to clear if the write never succeeded.
+      }
+    }
     try {
-      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+      const target = remember ? window.localStorage : window.sessionStorage;
+      target.setItem(STORAGE_KEY, JSON.stringify(next));
     } catch {
       // Private browsing can reject writes; the in-memory session still works.
     }
   }, []);
 
   const signInAs = useCallback(
-    (personaId: string) => {
+    (personaId: string, remember = true) => {
       const persona = personas.find((p) => p.id === personaId);
-      if (persona) signIn(persona.session);
+      if (persona) signIn(persona.session, remember);
     },
     [signIn],
   );
 
   const signOut = useCallback(() => {
     setSession(null);
-    try {
-      window.localStorage.removeItem(STORAGE_KEY);
-    } catch {
-      // Ignore: nothing to clean up if the write never succeeded.
+    for (const store of stores()) {
+      try {
+        store.removeItem(STORAGE_KEY);
+      } catch {
+        // Ignore: nothing to clean up if the write never succeeded.
+      }
     }
   }, []);
 

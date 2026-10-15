@@ -57,19 +57,27 @@ function LoginPage() {
 
   const onSubmit = (values: FormValues) => {
     const persona = personas.find((p) => p.session.email === values.email);
-    // No backend yet: any well-formed credential lands on the persona that owns
-    // the address, defaulting to the investor account.
-    const target = persona ?? personas[0];
-    if (!target) return;
-    signInAs(target.id);
-    toast.success(`Signed in as ${target.label}`, { description: target.session.name });
-    navigate({ to: target.session.role === "admin" ? "/admin" : "/app" });
+    // Previously this fell back to personas[0], so any address plus any eight
+    // characters silently signed the visitor in as Andrea Reyes and toasted
+    // that identity back at them. Signing in as somebody other than the account
+    // that was asked for is not a demo affordance, it is a lie about who you
+    // are. Unknown addresses now fail with a message that points at the real
+    // way in, and no session is created.
+    if (!persona) {
+      form.setError("email", {
+        message: `No demo account uses that address. ${personas.length} are available above.`,
+      });
+      return;
+    }
+    signInAs(persona.id, values.remember !== false);
+    toast.success(`Signed in as ${persona.label}`, { description: persona.session.name });
+    navigate({ to: persona.session.role === "admin" ? "/admin" : "/app" });
   };
 
   const quickSignIn = (personaId: string) => {
     const persona = personas.find((p) => p.id === personaId);
     if (!persona) return;
-    signInAs(persona.id);
+    signInAs(persona.id, true);
     toast.success(`Signed in as ${persona.label}`, { description: persona.session.name });
     navigate({ to: persona.session.role === "admin" ? "/admin" : "/app" });
   };

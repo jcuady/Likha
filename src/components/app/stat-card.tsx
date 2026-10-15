@@ -7,7 +7,11 @@ type StatCardProps = {
   label: string;
   value: string;
   /** Signed percentage change; omit when there is nothing honest to compare against. */
-  delta?: number;
+  // Explicitly `| undefined` rather than just optional: the project compiles
+  // with exactOptionalPropertyTypes, and callers pass a computed
+  // `monthOverMonth(...)` that may legitimately be undefined. Without this the
+  // only way to omit the arrow was to stop passing the prop at all.
+  delta?: number | undefined;
   /** Short explanation of what `delta` measures, shown under the value. */
   hint?: string;
   icon?: LucideIcon;

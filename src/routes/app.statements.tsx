@@ -42,12 +42,19 @@ function StatementsPage() {
     [transactions, filter],
   );
 
-  const distributed = transactions
+  // A pending transaction is not money that moved. Including it made this page
+  // report ₱2,964,800 invested while the overview and the portfolio, which sum
+  // `holdings`, both reported ₱2,109,800 for the same account.
+  const settled = transactions.filter((tx) => tx.status === "Completed");
+  const distributed = settled
     .filter((tx) => tx.type === "Distribution")
     .reduce((sum, tx) => sum + tx.amount, 0);
-  const investedTotal = transactions
+  const investedTotal = settled
     .filter((tx) => tx.type === "Investment")
     .reduce((sum, tx) => sum + Math.abs(tx.amount), 0);
+  // Counted from the rows rather than written down, and scoped to the same
+  // settled set as the money above so the card cannot contradict itself.
+  const propertyCount = new Set(settled.map((tx) => tx.listingId)).size;
 
   if (transactions.length === 0) {
     return (
@@ -88,7 +95,9 @@ function StatementsPage() {
         <StatCard
           label="Total invested"
           value={formatPHP(investedTotal)}
-          hint="Across 3 properties"
+          hint={`Across ${propertyCount} settled ${
+            propertyCount === 1 ? "property" : "properties"
+          }`}
         />
         <StatCard
           label="Net to date"

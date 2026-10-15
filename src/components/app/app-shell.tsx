@@ -1,5 +1,6 @@
-import { Link, Navigate, Outlet, useLocation } from "@tanstack/react-router";
-import { Bell, CircleHelp, Compass, Search } from "lucide-react";
+import { Link, Navigate, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
+import { CircleHelp, Compass, Search } from "lucide-react";
+import { useRef } from "react";
 
 import { AppSidebar } from "@/components/app/app-sidebar";
 import { navFor } from "@/components/app/nav-config";
@@ -68,6 +69,8 @@ function ShellSkeleton() {
 export function AppShell({ role }: { role: "investor" | "admin" }) {
   const { session } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
+  const searchRef = useRef<HTMLInputElement>(null);
   const items = navFor(session?.role ?? role);
 
   // Longest-prefix match so /app/portfolio highlights Portfolio, not Overview.
@@ -104,7 +107,20 @@ export function AppShell({ role }: { role: "investor" | "admin" }) {
               </span>
             </div>
 
-            <div className="hidden w-64 lg:block">
+            {/* The header search is wired to the marketplace query string rather than
+            filtering the current page. It used to be an uncontrolled input with
+            no value, no handler and no form: a text field that accepted
+            keystrokes and discarded them. */}
+            <form
+              action="/marketplace"
+              role="search"
+              className="hidden w-64 lg:block"
+              onSubmit={(event) => {
+                event.preventDefault();
+                const value = searchRef.current?.value.trim();
+                navigate({ to: "/marketplace", search: value ? { q: value } : {} });
+              }}
+            >
               <div className="relative">
                 <Search
                   data-icon
@@ -112,32 +128,28 @@ export function AppShell({ role }: { role: "investor" | "admin" }) {
                   className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground"
                 />
                 <Input
+                  ref={searchRef}
                   type="search"
+                  name="q"
                   placeholder="Search listings"
                   aria-label="Search listings"
                   className="h-9 pl-9"
                 />
               </div>
-            </div>
+            </form>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Search">
-                  <Search data-icon />
-                  <span className="sr-only lg:hidden">Search</span>
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Search</TooltipContent>
-            </Tooltip>
+            <Button
+              variant="outline"
+              className="lg:hidden"
+              onClick={() => navigate({ to: "/marketplace" })}
+            >
+              <Search data-icon aria-hidden />
+              Browse
+            </Button>
 
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Notifications, 2 unread">
-                  <Bell data-icon />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent>Notifications</TooltipContent>
-            </Tooltip>
+            {/* No bell. There is no notification data anywhere in this build, and
+                an aria-label of "Notifications, 2 unread" told screen-reader
+                users about two messages that do not exist. */}
 
             <Separator orientation="vertical" className="mx-0.5 h-5" />
 

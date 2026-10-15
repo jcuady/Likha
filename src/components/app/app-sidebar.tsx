@@ -28,6 +28,8 @@ import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Logo } from "@/components/brand/logo";
 import { useAuth } from "@/lib/auth";
+import { useAdminData } from "@/lib/admin-store";
+import { useWatchlist } from "@/lib/watchlist";
 import { navFor } from "./nav-config";
 
 export function AppSidebar() {
@@ -35,6 +37,16 @@ export function AppSidebar() {
   const location = useLocation();
   const navigate = useNavigate();
   const items = navFor(session?.role ?? "investor");
+  // Counts are read here, where the stores they live in are actually
+  // reachable, instead of being baked into nav-config. A watchlist that starts
+  // empty, is toggled from the marketplace, and can be cleared from the
+  // watchlist page cannot be summarised by a literal that is never recomputed.
+  const { count: watchlistCount } = useWatchlist();
+  const { listings: allListings, investors: allInvestors } = useAdminData();
+  const badges: Record<string, number> =
+    session?.role === "admin"
+      ? { "/admin/listings": allListings.length, "/admin/investors": allInvestors.length }
+      : { "/app/watchlist": watchlistCount };
   const name = session?.name ?? "Guest";
   const initials = name
     .split(" ")
@@ -70,6 +82,7 @@ export function AppSidebar() {
               <SidebarMenu>
                 {items.map((item) => {
                   const active = location.pathname === item.url;
+                  const badge = badges[item.url];
                   return (
                     <SidebarMenuItem key={item.url}>
                       <SidebarMenuButton asChild isActive={active} tooltip={item.title}>
@@ -81,7 +94,13 @@ export function AppSidebar() {
                           <span>{item.title}</span>
                         </Link>
                       </SidebarMenuButton>
-                      {item.badge ? <SidebarMenuBadge>{item.badge}</SidebarMenuBadge> : null}
+                      {/* Zero is not worth a badge: an empty counter reads as a
+                          failed request rather than an empty result. */}
+                      {badge ? (
+                        <SidebarMenuBadge aria-label={`${badge} ${item.title.toLowerCase()}`}>
+                          {badge}
+                        </SidebarMenuBadge>
+                      ) : null}
                     </SidebarMenuItem>
                   );
                 })}

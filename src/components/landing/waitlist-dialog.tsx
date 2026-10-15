@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { CheckCircle2, Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
@@ -40,6 +40,14 @@ export function WaitlistDialog({
 
   const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim());
 
+  const mounted = useRef(true);
+  useEffect(() => {
+    mounted.current = true;
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
+
   const onSubmit = async () => {
     if (!valid) {
       setError("Enter a valid email address");
@@ -48,6 +56,10 @@ export function WaitlistDialog({
     setError(null);
     setStep("sending");
     const result = await submitWaitlist({ email, interest });
+    // The visitor may have closed the dialog, or navigated away, while the
+    // submit was in flight. Continuing to set state then either reopens the
+    // success screen behind their back or writes into an unmounted component.
+    if (!mounted.current) return;
     if (!result.ok) {
       setError(result.error);
       setStep("form");
@@ -78,12 +90,16 @@ export function WaitlistDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <CheckCircle2 data-icon aria-hidden className="size-5 text-emerald-600" />
-                {interest === "investor" ? "You are on the list" : "We have your interest"}
+                {/* Not "You are on the list": the paragraph 40px below this
+                    title says the address has not been transmitted anywhere. A
+                    headline cannot claim a place on a list that exists only in
+                    this browser, however good the paragraph underneath is. */}
+                Saved in this browser
               </DialogTitle>
               <DialogDescription>
                 {interest === "investor"
-                  ? "We will open the first batch to this list before it goes public."
-                  : "We will get in touch about listing a property."}
+                  ? "Likha will open the first batch to this list before it goes public."
+                  : "Likha will get in touch about listing a property."}
               </DialogDescription>
             </DialogHeader>
 

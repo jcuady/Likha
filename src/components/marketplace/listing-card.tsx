@@ -70,7 +70,7 @@ export function ListingCard({ listing, savable = true, footnote, className }: Li
               onClick={onToggleSave}
               aria-pressed={saved}
               aria-label={saved ? `Remove ${listing.name} from watchlist` : `Save ${listing.name}`}
-              className="relative z-10 size-9 shrink-0"
+              className="relative z-10 size-11 shrink-0 sm:size-9"
             >
               <Star
                 data-icon

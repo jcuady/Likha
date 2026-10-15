@@ -133,7 +133,7 @@ export function ListingFilters({
             onChange={(event) => patch({ q: event.target.value })}
             placeholder="Search by name, city, or neighbourhood"
             aria-label="Search listings"
-            className="h-10 pl-9"
+            className="h-11 pl-9 sm:h-10"
           />
           {query.q ? (
             <Button
@@ -141,7 +141,7 @@ export function ListingFilters({
               size="icon"
               onClick={() => patch({ q: "" })}
               aria-label="Clear search"
-              className="absolute right-0 top-0 size-10 rounded-none"
+              className="absolute right-0 top-0 size-11 rounded-none sm:size-10"
             >
               <X data-icon />
             </Button>
@@ -221,7 +221,10 @@ export function ListingFilters({
             className="flex flex-wrap items-center gap-x-4 gap-y-2"
             aria-label="Availability"
           >
-            <div className="flex items-center gap-2">
+            {/* The Radix radio indicator is a 16px circle. The row around it is
+                what the finger actually hits, so the row carries the 44px
+                touch floor rather than the dot. */}
+            <div className="flex min-h-11 items-center gap-2 sm:min-h-0">
               <RadioGroupItem value="any" id="status-any" />
               <Label htmlFor="status-any" className="text-xs font-normal text-muted-foreground">
                 Any
@@ -230,7 +233,7 @@ export function ListingFilters({
             {statuses.slice(0, 3).map((status) => {
               const id = `status-${status.toLowerCase().replace(/\s+/g, "-")}`;
               return (
-                <div key={status} className="flex items-center gap-2">
+                <div key={status} className="flex min-h-11 items-center gap-2 sm:min-h-0">
                   <RadioGroupItem value={status} id={id} />
                   <Label htmlFor={id} className="text-xs font-normal text-muted-foreground">
                     {status}
@@ -270,7 +273,7 @@ function FilterSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger aria-label={label} className="h-10 w-full lg:w-auto lg:min-w-[9.5rem]">
+      <SelectTrigger aria-label={label} className="h-11 w-full sm:h-10 lg:w-auto lg:min-w-[9.5rem]">
         <SelectValue placeholder={label} />
       </SelectTrigger>
       <SelectContent>

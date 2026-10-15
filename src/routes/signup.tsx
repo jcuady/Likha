@@ -11,9 +11,18 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useAuth, type Role } from "@/lib/auth";
+import { useAuth } from "@/lib/auth";
 import { absoluteUrl } from "@/lib/site";
 
+/**
+ * Investor only, deliberately. This form used to offer an administrator role,
+ * which meant a public sign-up page could mint an admin session and land on the
+ * operations workspace. Even with a simulated auth provider that is the wrong
+ * shape: role selection belongs in an internal invite flow, not on a page whose
+ * heading is "Create your account". The admin surface stays reachable through
+ * the clearly-labelled test accounts on /login, where choosing a role is the
+ * stated purpose of the control.
+ */
 const schema = z.object({
   name: z.string().min(2, "Enter your full name"),
   email: z.string().email("Enter a valid email address"),
@@ -22,24 +31,16 @@ const schema = z.object({
     .min(8, "Use at least 8 characters")
     .regex(/[A-Za-z]/, "Include at least one letter")
     .regex(/[0-9]/, "Include at least one number"),
-  role: z.enum(["investor", "admin"]),
   terms: z.boolean().refine((accepted) => accepted, "Accept the terms to continue"),
 });
 
 type FormValues = z.infer<typeof schema>;
 
-const PERKS: Record<Role, string[]> = {
-  investor: [
-    "Browse every live listing with the full rent history",
-    "Buy a share from 1% and collect rent monthly",
-    "Track income, occupancy, and payouts in one place",
-  ],
-  admin: [
-    "Publish and price listings",
-    "Approve investors and manage KYC status",
-    "Watch occupancy and distribution health",
-  ],
-};
+const PERKS: string[] = [
+  "Browse every live listing with the full rent history",
+  "Buy a share from 1% and collect rent monthly",
+  "Track income, occupancy, and payouts in one place",
+];
 
 export const Route = createFileRoute("/signup")({
   head: () => ({
@@ -48,7 +49,7 @@ export const Route = createFileRoute("/signup")({
       {
         name: "description",
         content:
-          "Open a Likha investor or admin account. Browse live listings, buy a share from 1%, and collect rent every month.",
+          "Open a Likha investor account and browse live listings. This build creates no account and sends no data.",
       },
       { property: "og:url", content: absoluteUrl("/signup") },
       { property: "og:title", content: "Create your Likha account" },
@@ -64,22 +65,22 @@ function SignupPage() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
-    defaultValues: { name: "", email: "", password: "", role: "investor", terms: false },
+    defaultValues: { name: "", email: "", password: "", terms: false },
   });
-
-  const role = form.watch("role");
 
   const onSubmit = (values: FormValues) => {
     signIn({
       name: values.name,
       email: values.email,
-      role: values.role,
-      persona: values.role === "admin" ? "Administrator" : "Investor",
+      role: "investor",
+      persona: "Investor",
     });
-    toast.success("Account created", {
-      description: `Welcome to Likha, ${values.name.split(" ")[0]}.`,
+    // Not "Account created": nothing is registered anywhere. auth.tsx writes a
+    // key to this browser and the profile is discarded on reload.
+    toast.success("Demo session started", {
+      description: `Signed in as ${values.name.split(" ")[0]}. Nothing was registered or sent anywhere.`,
     });
-    navigate({ to: values.role === "admin" ? "/admin" : "/app" });
+    navigate({ to: "/app" });
   };
 
   return (
@@ -145,35 +146,14 @@ function SignupPage() {
           )}
         </div>
 
-        <fieldset className="flex flex-col gap-2">
-          <legend className="mb-2 text-sm font-medium">I am signing up as</legend>
-          <div className="grid grid-cols-2 gap-2">
-            {(["investor", "admin"] as const).map((value) => (
-              <label
-                key={value}
-                className={`flex cursor-pointer flex-col gap-1 rounded-xl border p-3 transition-colors ${
-                  role === value
-                    ? "border-primary bg-secondary ring-1 ring-primary"
-                    : "hover:bg-secondary/60"
-                }`}
-              >
-                <input type="radio" value={value} className="sr-only" {...form.register("role")} />
-                <span className="text-sm font-medium capitalize">{value}</span>
-                <span className="text-xs text-muted-foreground">
-                  {value === "investor" ? "Buy and hold shares" : "Manage listings"}
-                </span>
-              </label>
-            ))}
-          </div>
-          <ul className="mt-2 flex flex-col gap-1.5 rounded-xl bg-secondary/50 p-3">
-            {PERKS[role].map((perk) => (
-              <li key={perk} className="flex items-start gap-2 text-xs text-muted-foreground">
-                <Check data-icon aria-hidden className="mt-0.5 size-3.5 shrink-0 text-primary" />
-                {perk}
-              </li>
-            ))}
-          </ul>
-        </fieldset>
+        <ul className="flex flex-col gap-1.5 rounded-xl bg-secondary/50 p-3">
+          {PERKS.map((perk) => (
+            <li key={perk} className="flex items-start gap-2 text-xs text-muted-foreground">
+              <Check data-icon aria-hidden className="mt-0.5 size-3.5 shrink-0 text-primary" />
+              {perk}
+            </li>
+          ))}
+        </ul>
 
         <label htmlFor="terms" className="flex cursor-pointer items-start gap-3">
           <Checkbox
@@ -206,6 +186,15 @@ function SignupPage() {
         <Link to="/login" className="font-medium text-foreground underline underline-offset-4">
           Sign in
         </Link>
+      </p>
+
+      <p className="mt-8 text-center text-xs leading-relaxed text-muted-foreground">
+        This is a demonstration build. No account is created and nothing leaves your browser. To see
+        the operations side, use the administrator test account on the{" "}
+        <Link to="/login" className="underline underline-offset-4">
+          sign-in page
+        </Link>
+        .
       </p>
     </AuthShell>
   );

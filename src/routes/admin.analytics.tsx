@@ -57,12 +57,19 @@ function AdminAnalytics() {
     return OCCUPANCY_BANDS.map((label) => ({ name: label, value: counts[label] }));
   }, []);
 
-  const avgYield = listings.reduce((sum, l) => sum + l.yield, 0) / listings.length;
-  const avgRent = listings.reduce((sum, l) => sum + l.rent, 0) / listings.length;
-  const topListing = [...listings].sort((a, b) => b.yield - a.yield)[0];
-  const totalCapital = listings
-    .filter((l) => l.status !== "Draft")
-    .reduce((sum, l) => sum + l.price, 0);
+  // One universe per figure. These four tiles sit in a single row and the third
+  // is explicitly labelled "excluding drafts", so averaging over all eight put
+  // the draft Taal Garden into "Average rent" (₱92,000 instead of ₱93,000) and
+  // let a draft be named "Best performer".
+  const liveListings = useMemo(() => listings.filter((l) => l.status !== "Draft"), []);
+  const avgYield = liveListings.length
+    ? liveListings.reduce((sum, l) => sum + l.yield, 0) / liveListings.length
+    : 0;
+  const avgRent = liveListings.length
+    ? liveListings.reduce((sum, l) => sum + l.rent, 0) / liveListings.length
+    : 0;
+  const topListing = [...liveListings].sort((a, b) => b.yield - a.yield)[0];
+  const totalCapital = liveListings.reduce((sum, l) => sum + l.price, 0);
 
   const performance = useMemo(
     () =>
@@ -144,12 +151,16 @@ function AdminAnalytics() {
               <div key={row.city} className="flex items-center gap-3 text-xs">
                 <MapPin data-icon aria-hidden className="size-3.5 text-muted-foreground" />
                 <span className="w-20 shrink-0 font-medium">{row.city}</span>
+                {/* Normalised to the total, not to the largest city. Dividing by the
+                biggest row rendered Batangas at a full 100% bar while the
+                caption above promised "share of total asset value", so the bar
+                and its own label disagreed by construction. */}
                 <Progress
-                  value={(row.capital / (byCity[0]?.capital || 1)) * 100}
+                  value={totalCapital > 0 ? (row.capital / totalCapital) * 100 : 0}
                   className="h-1.5 flex-1"
                 />
                 <span className="w-24 shrink-0 text-right tabular-nums text-muted-foreground">
-                  {formatPHP(row.capital)}
+                  {totalCapital > 0 ? `${Math.round((row.capital / totalCapital) * 100)}%` : "—"}
                 </span>
               </div>
             ))}

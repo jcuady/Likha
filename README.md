@@ -83,6 +83,7 @@ Each of these is the only file that changes when a backend arrives.
 | `src/lib/marketplace.ts` | Listings, holdings, transactions, investors, time series | A query layer. `listingById`, `profileFor`, `batchStats` are the call sites. |
 | `src/lib/auth.tsx` | Session state and personas | A real provider. `signIn`, `signInAs`, `signOut` are the surface. |
 | `src/lib/watchlist.ts` | Saved listing ids | A server-backed collection. |
+| `src/lib/admin-store.ts` | Admin listings and investor mutations | Server mutations behind the same one-function-per-entity surface. |
 | `src/lib/waitlist.ts` | Waitlist capture | A `submitWaitlist` body calling Resend, Supabase, or a webhook. |
 | `public/sitemap.xml` | Static URL list | Server-rendered from the listings query. |
 
@@ -90,7 +91,7 @@ Everything else reads through those functions and returns plain objects.
 
 ## Data integrity rules
 
-These are enforced by `src/test/marketplace.test.ts`, not by convention:
+These are enforced by tests, not by convention:
 
 - **Gross yield is derived from price and rent, never stored.** Every listing
   previously overstated its yield, by up to 4.6 points.
@@ -99,6 +100,24 @@ These are enforced by `src/test/marketplace.test.ts`, not by convention:
 - **Availability is a mean across the batch.** Summing per-listing percentages
   produced a headline of "466% of units still open".
 - **The investor's income series matches what the held shares actually earn.**
+- **Counts are read where they live, never typed.** A sidebar badge holding "3"
+  sat above a watchlist that starts empty and is toggled from the marketplace;
+  a badge holding "8" sat above a list whose own Create and Remove buttons
+  changed the number without touching the badge. Counts are now supplied per
+  render by `AppSidebar`.
+- **A pending transaction is not money that moved.** Statements counted a
+  pending investment as deployed capital and disagreed with the overview by
+  ₱855,000 for the same account.
+- **A month-on-month delta is computed from the series it labels.** Three tiles
+  carried hardcoded percentages no series could reproduce, and one was the
+  *previous* period's change against a chart ending in the current one.
+- **Money that has not been checked out is never rendered as a receipt.** A
+  dialog titled "You are on the list" sat above a paragraph admitting the address
+  had been sent nowhere.
+
+`src/test/audit-regressions.test.ts` guards each of these. Every guard was
+mutation-proven: the defect was reintroduced and the suite required to go red.
+See [`docs/SYSTEM_AUDIT.md`](docs/SYSTEM_AUDIT.md) for the full audit.
 
 ## Commands
 
@@ -109,6 +128,18 @@ npm run preview  # preview the build
 npm test         # unit tests
 npm run lint     # eslint
 ```
+
+## Audit status
+
+`docs/SYSTEM_AUDIT.md` records a full-system pass over all 12 routes, all three
+personas and eight viewports, conducted against the deployed site.
+
+- 14 defects found and fixed, 2 of them P0
+- 0 horizontal overflow from 320px to 1920px
+- 0 controls under 44px on a touch width
+- 0 console errors
+- Route protection verified in both directions for both roles
+- 81 tests across 8 files, each new guard mutation-proven
 
 ## Honest scope
 

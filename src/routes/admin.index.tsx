@@ -69,14 +69,15 @@ function AdminOverview() {
         <StatCard
           label="Investor capital"
           value={formatPHP(stats.raised)}
-          delta={11.4}
-          hint="vs. last month"
+          // No delta: there is no month-by-month capital series in the data
+          // layer, so "11.4% vs. last month" described growth that never
+          // happened. StatCard renders no arrow when delta is undefined.
+          hint="Subscribed across all accounts"
           icon={Users}
         />
         <StatCard
           label="Occupancy"
           value={`${stats.occupancy}%`}
-          delta={2.1}
           // Deliberately scoped to the listings that are actually offered. A
           // draft's units are unsold rather than unlet, so folding it in would
           // report occupancy that has not happened yet. Saying so is what stops

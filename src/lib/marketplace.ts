@@ -231,6 +231,29 @@ const listingInputs: ListingInput[] = [
   },
 ];
 
+/**
+ * Month-on-month change between the last two points of a series, in percent.
+ * Returns undefined when there is no previous point or the previous value is
+ * zero, because a percentage against nothing is not a percentage. StatCard
+ * renders no arrow for undefined, which is the honest outcome: these cards
+ * previously carried hardcoded deltas (6.4, 7.5, 11.4) that no series could
+ * reproduce, and 7.5 was in fact the *Aug to Sep* change on a chart ending in
+ * October, so it was one period stale as well as arbitrary.
+ */
+export const monthOverMonth = (
+  series: readonly ({ value: number } | { amount: number })[],
+): number | undefined => {
+  const pick = (point: { value: number } | { amount: number }) =>
+    "value" in point ? point.value : point.amount;
+  const last = series[series.length - 1];
+  const prev = series[series.length - 2];
+  if (!last || !prev) return undefined;
+  const a = pick(last);
+  const b = pick(prev);
+  if (b === 0) return undefined;
+  return Number((((a - b) / b) * 100).toFixed(1));
+};
+
 export const listings: Listing[] = listingInputs.map((listing) => ({
   ...listing,
   yield: grossYield(listing.price, listing.rent),
