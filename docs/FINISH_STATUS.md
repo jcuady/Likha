@@ -4,7 +4,7 @@ Principal System Finish run for Likha. Resumable: the first non-terminal row
 below is where the next session starts.
 
 - **Run date:** 2026-10-16
-- **Branch / HEAD at completion:** `main`, `db21e3e` + this run's commits
+- **Branch / code HEAD at completion:** `main`, `3fd68b3`
 - **Production origin:** https://likha-ten.vercel.app
 - **Progress:** **100%** — see the four conditions at the end.
 
