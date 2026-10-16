@@ -84,6 +84,18 @@ cleanup batch and one overlay defect found while testing the others.
   as designed.
 - 0 horizontal overflow from 320px to 1920px across 13 routes.
 
+### Operations
+
+- Connected the GitHub repository to Vercel with `vercel git connect`. The
+  project API now reports `githubOrg: jcuady`, `githubRepo: Likha`, so a push
+  to `main` builds and deploys without a manual command.
+- Ran `npm audit`: 0 vulnerabilities across 580 dependencies. The checker was
+  proven able to fire first, by auditing a planted `minimist@0.0.8` in a
+  scratch directory, which correctly reported a critical advisory. A clean
+  result from a tool that cannot report anything is not a result.
+- OPS-08 had been deferred in `FINISH_STATUS.md` for "no network access". The
+  registry was reachable the whole time. The row is now `DONE`.
+
 ### Added
 
 - `src/test/audit-regressions.test.ts` — 33 guards, each mutation-proven by

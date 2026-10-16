@@ -236,7 +236,8 @@ page. A guard prevents this regressing into a permanently interactive overlay.
 | OPS-05 | Liveness | DONE | Vercel origin returns 200 on all 13 routes |
 | OPS-06 | Backup/restore | N/A | No persistent state to back up |
 | OPS-07 | No debug flags in prod | DONE | No dev bypass, no seed passwords |
-| OPS-08 | Dependency audit | DEFERRED | No network access for a live advisory; `npm audit` should run in CI once a pipeline exists |
+| OPS-09 | Auto-deploy from GitHub | DONE | `vercel git connect` → project API reports `githubOrg: jcuady`, `githubRepo: Likha`. A push to `main` now builds without a manual deploy |
+| OPS-08 | Dependency audit | DONE | `npm audit` → 0 vulnerabilities across 580 dependencies. The instrument was proven able to fire: a planted `minimist@0.0.8` in a scratch directory reported a critical advisory (CVSS 9.8), so the clean result is a real pass and not an offline fallback |
 
 ---
 
@@ -249,16 +250,21 @@ page. A guard prevents this regressing into a permanently interactive overlay.
    plus one P3 cleanup batch and one overlay defect found while testing the
    others. 0 open P0, 0 open P1.
 4. **Docs truthful** — no doc claims a feature works that the matrix marks
-   otherwise. All four `DEFERRED` rows name their revisit trigger.
+   otherwise. All three remaining `DEFERRED` rows name their revisit trigger.
 
-**Row census** (counted from the tables, not estimated): 136 status rows —
-124 `DONE`, 4 `DEFERRED`, 8 `N/A`, 0 `BLOCKED`.
+**Row census** (counted from the tables, not estimated): 137 status rows —
+126 `DONE`, 3 `DEFERRED`, 8 `N/A`, 0 `BLOCKED`.
 
 **Remaining known gaps, all deliberate and documented:** client-side route
-protection (CTRL-11, RBAC-04 — one gap, two rows), account-scoped ownership
-(RBAC-06), and a dependency audit (OPS-08). Three gaps across four rows, plus
-the prose-only restore/export/import deferral under CRUD. None is a defect in
-the current build; each is blocked on a backend that does not exist yet.
+protection (CTRL-11, RBAC-04 — one gap, two rows) and account-scoped ownership
+(RBAC-06). Two gaps across three rows, plus the prose-only restore/export/import
+deferral under CRUD. None is a defect in the current build; each is blocked on a
+backend that does not exist yet.
+
+OPS-08 was previously listed here as deferred for "no network access". That
+premise was false — the registry was reachable all along, and running the audit
+returned 0 vulnerabilities. The row is now `DONE`. A deferral written on an
+unverified premise is still a wrong answer.
 
 ## Artifacts
 

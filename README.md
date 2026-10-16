@@ -142,6 +142,8 @@ site across all 13 routes, all three personas and eight viewports.
 - 0 console errors
 - Route protection verified in both directions for both roles
 - 84 tests across 8 files, each new guard mutation-proven
+- `npm audit` clean across 580 dependencies
+- GitHub connected to Vercel, so a push to `main` deploys on its own
 
 ## Honest scope
 
