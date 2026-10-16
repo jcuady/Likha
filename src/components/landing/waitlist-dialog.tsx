@@ -14,16 +14,24 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { cn } from "@/lib/utils";
-import { INTEREST_COPY, storedEntries, submitWaitlist, type Interest } from "@/lib/waitlist";
+import {
+  DELIVERY_COPY,
+  INTEREST_COPY,
+  storedEntries,
+  submitWaitlist,
+  webhookUrl,
+  type Delivery,
+  type Interest,
+} from "@/lib/waitlist";
 
 type Step = "form" | "sending" | "done";
 
 /**
  * Capture step for the primary landing CTA.
  *
- * The confirmation deliberately says the address was not sent to a server. It
- * is stored in this browser only until a waitlist destination is connected,
- * and claiming otherwise would be the one untruthful thing on the page.
+ * The confirmation never claims more than `delivery` supports. With no webhook
+ * configured the address stays in this browser and the dialog says so; with one
+ * configured it says what the request actually achieved.
  */
 export function WaitlistDialog({
   trigger,
@@ -34,6 +42,7 @@ export function WaitlistDialog({
 }) {
   const [open, setOpen] = useState(false);
   const [step, setStep] = useState<Step>("form");
+  const [delivery, setDelivery] = useState<Delivery>("local");
   const [email, setEmail] = useState("");
   const [interest, setInterest] = useState<Interest>("investor");
   const [error, setError] = useState<string | null>(null);
@@ -66,6 +75,7 @@ export function WaitlistDialog({
       return;
     }
     setStep("done");
+    setDelivery(result.delivery);
     onSubmitted?.();
   };
 
@@ -79,6 +89,7 @@ export function WaitlistDialog({
     setOpen(false);
     window.setTimeout(() => {
       setStep("form");
+      setDelivery("local");
       setError(null);
     }, 200);
   };
@@ -90,6 +101,7 @@ export function WaitlistDialog({
   };
 
   const alreadyIn = storedEntries().length > 0;
+  const connected = webhookUrl() !== null;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -100,26 +112,28 @@ export function WaitlistDialog({
             <DialogHeader>
               <DialogTitle className="flex items-center gap-2">
                 <CheckCircle2 data-icon aria-hidden className="size-5 text-emerald-600" />
-                {/* Not "You are on the list": the paragraph 40px below this
-                    title says the address has not been transmitted anywhere. A
-                    headline cannot claim a place on a list that exists only in
-                    this browser, however good the paragraph underneath is. */}
-                Saved in this browser
+                {DELIVERY_COPY[delivery].title}
               </DialogTitle>
               <DialogDescription>
-                {interest === "investor"
-                  ? "Likha will open the first batch to this list before it goes public."
-                  : "Likha will get in touch about listing a property."}
+                {/* A promise to contact someone is only true when something was
+                    actually transmitted. With `local` there is nowhere to
+                    contact from, so the sentence changes rather than the
+                    detail paragraph underneath carrying the truth alone. */}
+                {delivery === "local"
+                  ? "Nothing was sent anywhere. This address is kept in this browser only."
+                  : interest === "investor"
+                    ? "Likha will open the first batch to this list before it goes public."
+                    : "Likha will get in touch about listing a property."}
               </DialogDescription>
             </DialogHeader>
 
             <div className="rounded-xl border bg-secondary/50 p-4">
               <p className="text-sm font-medium">{email.trim()}</p>
               <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                Saved in this browser as{" "}
-                <span className="tabular-nums">{INTEREST_COPY[interest].label}</span>. Likha is a
-                preview build with no server attached, so this address has not been transmitted
-                anywhere yet. Nothing is charged and no account was created.
+                <span className="font-medium text-foreground">
+                  {INTEREST_COPY[interest].label}.
+                </span>{" "}
+                {DELIVERY_COPY[delivery].detail}
               </p>
             </div>
 
@@ -131,9 +145,11 @@ export function WaitlistDialog({
           <>
             <DialogHeader>
               <DialogTitle>Join the early list</DialogTitle>
+              {/* The header must not promise a list that does not exist yet. */}
               <DialogDescription>
-                Likha opens its first listing batch to this list before it goes public. Free to
-                join.
+                {connected
+                  ? "Likha opens its first listing batch to this list before it goes public. Free to join."
+                  : "Likha opens its first listing batch before it goes public. This preview build keeps your address in this browser only."}
               </DialogDescription>
             </DialogHeader>
 
@@ -210,7 +226,9 @@ export function WaitlistDialog({
               <p className="text-xs leading-relaxed text-muted-foreground">
                 {alreadyIn
                   ? "You have already joined in this browser. Add a different address if this one is not yours."
-                  : "This is a preview build. Your address is kept in this browser and is not sent to a server."}
+                  : connected
+                    ? "Your address is sent to the Likha early list."
+                    : "This is a preview build. Your address is kept in this browser and is not sent to a server."}
               </p>
             </form>
           </>

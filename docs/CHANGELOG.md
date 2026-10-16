@@ -2,6 +2,44 @@
 
 All notable behaviour changes. Dates are the day the change reached production.
 
+## 2026-10-16 — Waitlist sends to a Google Sheet
+
+### Added
+
+- `VITE_WAITLIST_WEBHOOK_URL` — the project's first environment variable, and
+  optional. Unset, the address is stored in the visitor's browser only, exactly
+  as before. Set, it POSTs to a Google Apps Script web app that appends to a
+  Sheet. Setup instructions are in `docs/setup/waitlist-apps-script.js`;
+  `.env.example` is tracked and `.env*` is now gitignored, which it was not —
+  a filled `.env` would have been committed by accident.
+
+### Correctness
+
+- `submitWaitlist` now reports what actually happened rather than a bare `ok`:
+  `confirmed` when the webhook answers 2xx and the reply is readable, `sent`
+  when the request left the browser but the reply was opaque, `local` when
+  nothing was transmitted. The dialog copy is derived from that value.
+
+  The middle state exists because Apps Script sends no CORS headers: a delivered
+  request and an unreadable reply are indistinguishable to the browser, and a
+  client that trusted a rejected `fetch` would either drop a row that arrived or
+  claim one that did not. It is sent as `text/plain` because an
+  `application/json` body triggers a preflight that Apps Script does not answer,
+  so the request would never leave the page. The retry is safe because the
+  script upserts on email.
+
+- The confirmation previously promised "Likha will get in touch" and "Likha
+  will open the first batch to this list" while the paragraph beneath it said
+  nothing had been transmitted. Both promises are now conditional on delivery,
+  as is the dialog header, so no screen contradicts another.
+
+### Tests
+
+- 15 new guards: each delivery state, the text/plain requirement, no network
+  call when unconfigured, no post for an invalid address, the local copy kept
+  when the network drops, and five copy invariants binding what each state is
+  permitted to claim.
+
 ## 2026-10-16 — System audit closed
 
 19 severity-tagged defects — 2 P0, 6 P1, 11 P2 — plus one consolidated P3

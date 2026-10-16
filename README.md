@@ -84,7 +84,7 @@ Each of these is the only file that changes when a backend arrives.
 | `src/lib/auth.tsx` | Session state and personas | A real provider. `signIn`, `signInAs`, `signOut` are the surface. |
 | `src/lib/watchlist.ts` | Saved listing ids | A server-backed collection. |
 | `src/lib/admin-store.ts` | Admin listings and investor mutations | Server mutations behind the same one-function-per-entity surface. |
-| `src/lib/waitlist.ts` | Waitlist capture | A `submitWaitlist` body calling Resend, Supabase, or a webhook. |
+| `src/lib/waitlist.ts` | Waitlist capture, and delivery to `VITE_WAITLIST_WEBHOOK_URL` | Already implemented; swap the transport for a first-party endpoint. |
 | `public/sitemap.xml` | Static URL list | Server-rendered from the listings query. |
 
 Everything else reads through those functions and returns plain objects.
@@ -149,7 +149,8 @@ site across all 13 routes, all three personas and eight viewports.
 
 Likha is not yet accepting investments. Figures shown across the site are
 illustrative and are not an offer of return. The app-download buttons state that
-the mobile apps are unpublished, and the waitlist confirmation says plainly that
-an address is stored in the browser only and has not been transmitted to a
-server. Those statements are load-bearing: they should be updated at the same
-time as whatever backend makes them true, never before.
+the mobile apps are unpublished. The waitlist confirmation reports what actually
+happened to an address and nothing more: transmitted, sent-but-unconfirmed, or
+stored in this browser only, depending on whether `VITE_WAITLIST_WEBHOOK_URL` is
+configured and what the request achieved. Those statements are load-bearing:
+they are derived from the result, so they cannot drift from the behaviour.

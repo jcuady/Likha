@@ -32,6 +32,12 @@ responsive-evidence/
 # One-off codemod/patch scripts kept while building; not part of the app.
 scripts/
 
+# Local env files. These carry the waitlist webhook URL and anything added
+# later; only the committed template is tracked.
+.env
+.env.*
+!.env.example
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

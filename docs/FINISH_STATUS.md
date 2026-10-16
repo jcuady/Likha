@@ -63,6 +63,7 @@ Statuses: `DONE` (evidence bound) · `BLOCKED` (reason given) · `DEFERRED`
 | CTRL-09 | Keyboard reachable | DONE | Sliders arrow-key operable; tabs, menus, dialogs |
 | CTRL-10 | **Accessible name on every control** | DONE | 20-surface sweep, 0 unnamed |
 | CTRL-11 | Permission-gated server-side | DEFERRED | Client-side only — the session is in web storage. Revisit when a real auth provider lands. `docs/RBAC_MATRIX.md` |
+| CTRL-12 | Waitlist reports the truth | DONE | `submitWaitlist` returns `confirmed` / `sent` / `local`; the confirmation copy is derived from it. `sent` exists because Apps Script sends no CORS headers, so a delivered request is indistinguishable from an unreadable one |
 
 ## FILTER — Search, filter, sort
 
@@ -122,7 +123,7 @@ stated as a feature; the PDF button already explains it is not connected.
 | FORM-02 | Signup validated | DONE | zod; name ≥2, email, 8+ with letter and number, terms |
 | FORM-03 | Listing validated | DONE | Non-numeric or ≤0 price/rent rejected with a toast |
 | FORM-04 | Invite validated | DONE | Submit disabled until name ≥2 and email pattern matches |
-| FORM-05 | Waitlist validated | DONE | Email pattern; error surfaced inline |
+| FORM-05 | Waitlist validated | DONE | Email pattern; error surfaced inline; an invalid address is never posted |
 | FORM-06 | Errors adjacent and specific | DONE | `role="alert"` next to the field; no bare "something went wrong" |
 | FORM-07 | Values preserved on failure | DONE | Dialog stays open with input intact |
 
@@ -215,7 +216,7 @@ page. A guard prevents this regressing into a permanently interactive overlay.
 | ID | Check | Status | Evidence |
 |---|---|---|---|
 | DOC-01 | README accurate | DONE | Followed for install/build/test; integrity rules explain why |
-| DOC-02 | Env vars | N/A | None exist yet; documented when the backend lands |
+| DOC-02 | Env vars | DONE | One: `VITE_WAITLIST_WEBHOOK_URL`. Optional; unset means local-only. `.env.example` is tracked, `.env*` is gitignored |
 | DOC-03 | Architecture | DONE | `docs/ARCHITECTURE.md` |
 | DOC-04 | API surface | N/A | No API; swap points documented instead |
 | DOC-05 | RBAC documented | DONE | `docs/RBAC_MATRIX.md` |
@@ -252,8 +253,8 @@ page. A guard prevents this regressing into a permanently interactive overlay.
 4. **Docs truthful** — no doc claims a feature works that the matrix marks
    otherwise. All three remaining `DEFERRED` rows name their revisit trigger.
 
-**Row census** (counted from the tables, not estimated): 137 status rows —
-126 `DONE`, 3 `DEFERRED`, 8 `N/A`, 0 `BLOCKED`.
+**Row census** (counted from the tables, not estimated): 138 status rows —
+128 `DONE`, 3 `DEFERRED`, 7 `N/A`, 0 `BLOCKED`.
 
 **Remaining known gaps, all deliberate and documented:** client-side route
 protection (CTRL-11, RBAC-04 — one gap, two rows) and account-scoped ownership

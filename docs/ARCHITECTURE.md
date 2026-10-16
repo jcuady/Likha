@@ -42,7 +42,7 @@ application state, and they are the only things a backend replaces:
 | `src/lib/auth.tsx` | Session, personas, persistence | A real provider. `signIn`, `signInAs`, `signOut` are the surface. |
 | `src/lib/admin-store.ts` | Admin listing and investor mutations | Server mutations behind the same one-function-per-entity API. |
 | `src/lib/watchlist.ts` | Saved listing ids | A server-backed collection per account. |
-| `src/lib/waitlist.ts` | Early-access capture | A `submitWaitlist` body calling Resend, Sheets or a webhook. |
+| `src/lib/waitlist.ts` | Early-access capture and delivery to `VITE_WAITLIST_WEBHOOK_URL` | Already implemented; swap the transport for a first-party endpoint. |
 
 `public/sitemap.xml` is server-rendered from the listings query when listings
 become dynamic.
@@ -102,12 +102,45 @@ the page and in the accessibility tree. Both `dialog.tsx` and
 `data-[state=closed]:pointer-events-none`. Correctness does not depend on an
 animation library firing an event.
 
+## Waitlist delivery
+
+`VITE_WAITLIST_WEBHOOK_URL` is the only environment variable in the project. It
+is optional: unset, the address is stored in the visitor's browser only.
+
+The destination is a Google Apps Script web app (`/exec`) that appends to a
+Sheet. Setup: `docs/setup/waitlist-apps-script.js`. Copy `.env.example` to
+`.env.local`; `.env*` is gitignored and only the template is tracked. Vite
+inlines `VITE_*` at build time, so the site must be rebuilt after a change.
+
+`submitWaitlist` reports one of three outcomes, and the dialog copy is derived
+from it rather than chosen separately:
+
+| Outcome | Meaning | Copy may claim |
+|---|---|---|
+| `confirmed` | The webhook answered 2xx and the reply was readable | The address reached the list |
+| `sent` | The request left the browser but the reply was opaque | It was sent, with no status shown |
+| `local` | Nothing was transmitted: no endpoint configured, or the request failed | Only that it is stored locally |
+
+Two details that are load-bearing:
+
+- **The body is `text/plain`, not JSON.** An `application/json` content type
+  makes the browser send a CORS preflight, Apps Script does not answer
+  `OPTIONS`, and the request never leaves the page at all. Text/plain is
+  CORS-safelisted and is delivered.
+- **`sent` is not `confirmed`.** Apps Script sends no CORS headers, so a readable
+  fetch is rejected by the browser *even though the Sheet already has the row*.
+  The client therefore tries a readable fetch, then falls back to `mode:
+  "no-cors"` to establish whether the request can be sent at all. That fallback
+  is safe to perform twice because the Apps Script side upserts on email, so a
+  retry rewrites one row instead of appending a duplicate.
+
 ## Testing
 
 - `src/test/marketplace.test.ts` — data-layer invariants.
 - `src/test/seo.test.ts` — canonical/robots/sitemap drift.
 - `src/test/presentation.test.ts` — encoding integrity, counts vs grids.
-- `src/test/waitlist.test.ts` — waitlist storage.
+- `src/test/waitlist.test.ts` — waitlist storage, delivery outcomes, and the
+  rule that confirmation copy may not claim more than the result supports.
 - `src/test/pwa.test.ts` — manifest installability, icon pixel dimensions.
 - `src/test/audit-regressions.test.ts` — one guard per audited defect.
 
