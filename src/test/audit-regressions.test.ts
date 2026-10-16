@@ -293,6 +293,60 @@ describe("no control is decorative", () => {
 });
 
 describe("async dialogs cannot outlive their own state", () => {
+  it("the slider names the thumb, not just the root", () => {
+    // `role="slider"` sits on the thumb. Radix's root aria-label did not reach it
+    // in the installed version, so the thumb rendered with no accessible name at
+    // all (WCAG 4.1.2). aria-labelledby is not an alternative: Radix forwards
+    // neither it nor aria-label from root to thumb.
+    const slider = src("src/components/ui/slider.tsx");
+    const thumbs = slider.match(/<SliderPrimitive\.Thumb[\s\S]*?\/>/)?.[0] ?? "";
+    expect(thumbs, "no thumb element found").toContain("aria-label={ariaLabel}");
+    // Every usage must pass a name.
+    for (const file of [
+      "src/components/marketplace/invest-dialog.tsx",
+      "src/components/marketplace/listing-filters.tsx",
+    ]) {
+      expect(src(file), `${file} passes no slider label`).toMatch(/aria-label=/);
+      expect(src(file), `${file} uses aria-labelledby, which Radix drops`).not.toMatch(
+        /aria-labelledby=/,
+      );
+    }
+  });
+
+  it("every dialog and alert-dialog is inert when closed", () => {
+    // Radix unmounts dialog content only after the exit animation fires
+    // animationend. With tw-animate-css that event never arrived: closed dialogs
+    // stayed mounted at full size with opacity 1, no aria-hidden and
+    // pointer-events auto, swallowing clicks over the page and remaining in the
+    // accessibility tree. Measured in production before this fix.
+    for (const file of ["src/components/ui/dialog.tsx", "src/components/ui/alert-dialog.tsx"]) {
+      const text = src(file);
+      // Both the overlay and the content panel need it.
+      const guards = text.match(/data-\[state=closed\]:invisible/g) ?? [];
+      const pointers = text.match(/data-\[state=closed\]:pointer-events-none/g) ?? [];
+      expect(guards.length, `${file} invisible guards`).toBeGreaterThanOrEqual(2);
+      expect(pointers.length, `${file} pointer-events guards`).toBeGreaterThanOrEqual(2);
+    }
+  });
+
+  it("no dialog closes by calling setOpen directly", () => {
+    // The Cancel/Done buttons called setOpen(false) themselves, which bypasses
+    // Radix's onOpenChange where the cleanup lived. Confirming and then
+    // cancelling inside the processing window left the success timer armed, and
+    // reopening showed a receipt for a cancelled purchase. Reproduced in
+    // production before this fix, not reasoned about in the abstract.
+    for (const file of [
+      "src/components/marketplace/invest-dialog.tsx",
+      "src/components/landing/waitlist-dialog.tsx",
+    ]) {
+      const direct = [
+        ...code(file).matchAll(/onClick=\{\(\)\s*=>\s*setOpen\(\s*(?:true|false)\s*\)\s*\}/g),
+      ];
+      expect(direct, `${file} closes outside the shared helper`).toHaveLength(0);
+      expect(src(file), `${file} has no shared close helper`).toMatch(/const close = \(\) => \{/);
+    }
+  });
+
   it("the invest dialog clears its pending timers on close", () => {
     const dialog = src("src/components/marketplace/invest-dialog.tsx");
     expect(dialog).toContain("clearTimeout");

@@ -72,11 +72,7 @@ export function ListingCard({ listing, savable = true, footnote, className }: Li
               aria-label={saved ? `Remove ${listing.name} from watchlist` : `Save ${listing.name}`}
               className="relative z-10 size-11 shrink-0 sm:size-9"
             >
-              <Star
-                data-icon
-                aria-hidden
-                className={cn(saved && "fill-current text-amber-500 text-amber-500")}
-              />
+              <Star data-icon aria-hidden className={cn(saved && "fill-current text-amber-500")} />
             </Button>
           ) : null}
         </div>
@@ -93,7 +89,11 @@ export function ListingCard({ listing, savable = true, footnote, className }: Li
 
       <CardContent className="flex flex-1 flex-col gap-3 p-4">
         <div>
-          <h3 className="truncate font-medium leading-snug">
+          {/* h2, not h3. Every page that renders a ListingCard puts it in a top-level
+          grid directly under the page's h1 with no h2 in between, so h3 skipped
+          a level on /marketplace, /app/watchlist and the "similar properties"
+          rail on every property page. */}
+          <h2 className="truncate font-medium leading-snug">
             <Link
               to="/properties/$id"
               params={{ id: listing.id }}
@@ -101,7 +101,7 @@ export function ListingCard({ listing, savable = true, footnote, className }: Li
             >
               {listing.name}
             </Link>
-          </h3>
+          </h2>
           <p className="mt-1 flex items-center gap-1.5 text-xs text-muted-foreground">
             <MapPin data-icon aria-hidden className="size-3.5 shrink-0" />
             <span className="truncate">{listing.location}</span>

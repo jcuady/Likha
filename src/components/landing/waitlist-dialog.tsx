@@ -69,14 +69,24 @@ export function WaitlistDialog({
     onSubmitted?.();
   };
 
+  /**
+   * Every close goes through here. The Close button used to call
+   * `setOpen(false)` directly, so the reset below never ran for it and a
+   * second submit inside the same session started from the previous step
+   * instead of the form.
+   */
+  const close = () => {
+    setOpen(false);
+    window.setTimeout(() => {
+      setStep("form");
+      setError(null);
+    }, 200);
+  };
+
   const onOpenChange = (next: boolean) => {
-    setOpen(next);
-    if (!next) {
-      window.setTimeout(() => {
-        setStep("form");
-        setError(null);
-      }, 200);
-    }
+    // Escape and outside-click land here; opening is a plain setOpen.
+    if (next) setOpen(true);
+    else close();
   };
 
   const alreadyIn = storedEntries().length > 0;
@@ -114,7 +124,7 @@ export function WaitlistDialog({
             </div>
 
             <DialogFooter>
-              <Button onClick={() => setOpen(false)}>Close</Button>
+              <Button onClick={close}>Close</Button>
             </DialogFooter>
           </>
         ) : (

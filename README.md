@@ -131,15 +131,17 @@ npm run lint     # eslint
 
 ## Audit status
 
-`docs/SYSTEM_AUDIT.md` records a full-system pass over all 12 routes, all three
-personas and eight viewports, conducted against the deployed site.
+`docs/SYSTEM_AUDIT.md` records the first full-system pass and
+`docs/FINISH_STATUS.md` the completion run, both conducted against the deployed
+site across all 13 routes, all three personas and eight viewports.
 
-- 14 defects found and fixed, 2 of them P0
+- 19 severity-tagged defects closed, 2 of them P0
+- 100 controls enumerated and verified; 14 were broken and were fixed
 - 0 horizontal overflow from 320px to 1920px
 - 0 controls under 44px on a touch width
 - 0 console errors
 - Route protection verified in both directions for both roles
-- 81 tests across 8 files, each new guard mutation-proven
+- 84 tests across 8 files, each new guard mutation-proven
 
 ## Honest scope
 

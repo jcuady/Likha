@@ -21,7 +21,15 @@ const DialogOverlay = React.forwardRef<
   <DialogPrimitive.Overlay
     ref={ref}
     className={cn(
-      "fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
+      // `invisible` and `pointer-events-none` on the closed state are load
+      // bearing, not decoration. Radix unmounts dialog content only after the
+      // exit animation fires `animationend`. With tw-animate-css that event
+      // never arrived: the closed dialog stayed mounted at full size with
+      // opacity 1, no `aria-hidden` and `pointer-events: auto`, so it sat over
+      // the page swallowing clicks and remained in the accessibility tree.
+      // Correctness here must not depend on an animation library firing an
+      // event; these two utilities make a lingering dialog inert regardless.
+      "fixed inset-0 z-50 bg-foreground/60 backdrop-blur-sm data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
       className,
     )}
     {...props}
@@ -38,7 +46,7 @@ const DialogContent = React.forwardRef<
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
-        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
+        "fixed left-[50%] top-[50%] z-50 grid w-full max-w-lg translate-x-[-50%] translate-y-[-50%] gap-4 border bg-background p-6 shadow-lg duration-200 data-[state=closed]:pointer-events-none data-[state=closed]:invisible data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
         className,
       )}
       {...props}

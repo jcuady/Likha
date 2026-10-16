@@ -38,9 +38,12 @@ export function AuthShell({
           <p className="text-xs font-medium uppercase tracking-[0.18em] text-white/60">
             Metro Manila property
           </p>
-          <h2 className="mt-4 font-editorial text-4xl leading-tight">
+          {/* A tagline, not a section heading. It was an h2 and rendered *before* the
+            page's h1, so /login and /signup both started with a level-2
+            heading above their level-1. */}
+          <p className="mt-4 font-editorial text-4xl leading-tight">
             Own a share of the building, not the whole unit.
-          </h2>
+          </p>
           <p className="mt-4 text-sm leading-relaxed text-white/70">
             Rental income every month and an owned share of the property. Likha handles the
             screening, the tenants, and the repairs.

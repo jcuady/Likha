@@ -15,7 +15,7 @@ import {
   type MarketplaceSearch,
   type SortKey,
 } from "@/components/marketplace/listing-filters";
-import { batchStats, listings, publicListings } from "@/lib/marketplace";
+import { batchStats, publicListings } from "@/lib/marketplace";
 import { absoluteUrl } from "@/lib/site";
 import { marketplaceSchema } from "@/lib/seo-schemas";
 
@@ -72,6 +72,14 @@ function MarketplacePage() {
 
   const featured = publicListings.filter((l) => l.featured).length;
 
+  // The filters currently narrowing the set, for the empty-state recovery copy.
+  const active: string[] = [];
+  if (search.q.trim()) active.push(`the search "${search.q.trim()}"`);
+  if (search.city !== "all") active.push(`the ${search.city} city filter`);
+  if (search.type !== "all") active.push(`the ${search.type} type filter`);
+  if (search.status !== "all") active.push(`the ${search.status} status filter`);
+  if (search.minYield > 0) active.push(`a ${search.minYield.toFixed(1)}% minimum yield`);
+
   return (
     <PublicPage>
       <PageHeader
@@ -94,11 +102,19 @@ function MarketplacePage() {
 
       <ListingFilters query={search} onChange={onChange} resultCount={results.length} />
 
+      {/* The empty state names the filters that are actually set. The copy used
+          to suggest clearing "the city or the minimum yield" whatever had been
+          chosen, so a zero-result view caused by the status filter pointed at
+          two controls that were not the problem. */}
       {results.length === 0 ? (
         <EmptyState
           icon={SearchX}
           title="No listings match those filters"
-          description="Try widening the city or clearing the minimum yield. New properties are added as each batch opens."
+          description={
+            active.length > 0
+              ? `Nothing matches ${active.join(", ")}. Clearing one of those is the quickest way back. New properties are added as each batch opens.`
+              : "New properties are added as each batch opens."
+          }
           action={{ label: "Reset filters", onClick: () => onChange({ ...defaultQuery }) }}
         />
       ) : (

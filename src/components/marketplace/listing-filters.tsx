@@ -197,11 +197,10 @@ export function ListingFilters({
       <div className="flex flex-col gap-4 border-t pt-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
           <fieldset className="flex min-w-[220px] flex-1 items-center gap-3 sm:max-w-xs">
-            <Label htmlFor="min-yield" className="shrink-0 text-xs text-muted-foreground">
-              Min yield
-            </Label>
+            {/* Radix forwards only `aria-label` to the thumb, so this is the association
+              that actually takes effect. It repeats the visible label. */}
+            <Label className="shrink-0 text-xs text-muted-foreground">Min yield</Label>
             <Slider
-              id="min-yield"
               min={0}
               max={8}
               step={0.5}
@@ -224,8 +223,12 @@ export function ListingFilters({
             {/* The Radix radio indicator is a 16px circle. The row around it is
                 what the finger actually hits, so the row carries the 44px
                 touch floor rather than the dot. */}
+            {/* Radix RadioGroupItem renders a <button role="radio">, and a <button> is not
+                a labelable element, so the adjacent <label htmlFor> names
+                nothing. Each item carries its own aria-label matching the
+                visible text. */}
             <div className="flex min-h-11 items-center gap-2 sm:min-h-0">
-              <RadioGroupItem value="any" id="status-any" />
+              <RadioGroupItem value="any" id="status-any" aria-label="Any" />
               <Label htmlFor="status-any" className="text-xs font-normal text-muted-foreground">
                 Any
               </Label>
@@ -234,7 +237,7 @@ export function ListingFilters({
               const id = `status-${status.toLowerCase().replace(/\s+/g, "-")}`;
               return (
                 <div key={status} className="flex min-h-11 items-center gap-2 sm:min-h-0">
-                  <RadioGroupItem value={status} id={id} />
+                  <RadioGroupItem value={status} id={id} aria-label={status} />
                   <Label htmlFor={id} className="text-xs font-normal text-muted-foreground">
                     {status}
                   </Label>

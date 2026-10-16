@@ -189,7 +189,10 @@ function AdminOverview() {
                     </Badge>
                   </div>
                 </div>
-                {index < 4 ? <Separator /> : null}
+                {/* Compared against the rows actually rendered, not the literal4.
+                    Changing the slice to 6 or 3 used to leave a divider under the
+                    last item or drop one, silently. */}
+                {index < Math.min(listings.length, 5) - 1 ? <Separator /> : null}
               </li>
             ))}
           </ul>

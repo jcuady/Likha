@@ -367,10 +367,10 @@ function AdminListings() {
         </CardContent>
       </Card>
 
+      {/* No DialogTrigger: the dialog opens from the "New listing" button and each
+          row's Edit menu item, both of which set `editing` directly. A hidden
+          trigger rendered a nameless button into the DOM for no purpose. */}
       <Dialog open={Boolean(editing)} onOpenChange={(open) => !open && setEditing(null)}>
-        <DialogTrigger asChild>
-          <span className="hidden" />
-        </DialogTrigger>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>

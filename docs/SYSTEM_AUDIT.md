@@ -10,7 +10,7 @@ application as all three personas, not by reading the source.
 - **Framework:** React 19, TanStack Router, Vite 8, Tailwind v4, shadcn/ui (Radix)
 - **Build status:** PASS
 - **Test status:** PASS — 81 tests across 8 files
-- **Scope:** 12 routes, 3 personas, 8 viewports, every interactive control
+- **Scope:** 13 page routes, 3 personas, 8 viewports, every interactive control
 - **Method:** rendered-output sweep plus a mutation probe on every new guard
 
 ### The finding that shaped this audit
@@ -132,7 +132,7 @@ and remain the only places that need to change:
 
 ## Tests Added
 
-`src/test/audit-regressions.test.ts` — 30 guards, one per defect.
+`src/test/audit-regressions.test.ts` — 33 guards.
 
 Every guard was **mutation-proven**: the defect was reintroduced and the suite
 was required to go red. Seven mutations were planted at once and all seven were

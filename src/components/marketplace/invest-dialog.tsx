@@ -60,22 +60,33 @@ export function InvestDialog({ listing, trigger }: { listing: Listing; trigger: 
     timers.current = [];
   };
 
+  /**
+   * Every close goes through here, not through `setOpen` directly.
+   *
+   * The Cancel and Done buttons used to call `setOpen(false)` themselves, which
+   * bypassed `onOpenChange` entirely — so the timer cleanup that lived there
+   * never ran for the exact case that needed it. Confirm, then Cancel during
+   * the 900ms "Processing" window: the dialog closed, the success timer was
+   * still armed, it fired, and reopening the dialog showed "Subscription
+   * recorded" for a purchase the visitor had just cancelled. Verified in
+   * production before this fix.
+   */
+  const close = () => {
+    setOpen(false);
+    clearTimers();
+    timers.current.push(window.setTimeout(() => setStep("configure"), 200));
+  };
+
   const startConfirm = () => {
     setStep("confirming");
     timers.current.push(window.setTimeout(() => setStep("done"), 900));
   };
 
   const onOpenChange = (next: boolean) => {
-    setOpen(next);
-    // Cancel before resetting, not after. Two independent timers used to race:
-    // cancel during "confirming" ran the 200ms reset, then the still-live 900ms
-    // timer fired and set the step to "done" anyway. The dialog was closed so
-    // nothing was visible, but reopening showed "Subscription recorded" for a
-    // purchase the visitor had cancelled.
-    if (!next) {
-      clearTimers();
-      timers.current.push(window.setTimeout(() => setStep("configure"), 200));
-    }
+    // Escape and outside-click land here. Opening is a plain setOpen; closing
+    // is routed through close() so the pending timers are always cancelled.
+    if (next) setOpen(true);
+    else close();
   };
 
   // A pending timer firing into an unmounted component is the same defect
@@ -108,7 +119,7 @@ export function InvestDialog({ listing, trigger }: { listing: Listing; trigger: 
               </p>
             </div>
             <DialogFooter>
-              <Button onClick={() => setOpen(false)}>Done</Button>
+              <Button onClick={close}>Done</Button>
             </DialogFooter>
           </>
         ) : (
@@ -126,17 +137,23 @@ export function InvestDialog({ listing, trigger }: { listing: Listing; trigger: 
               <>
                 <div className="space-y-3">
                   <div className="flex items-baseline justify-between">
-                    <Label htmlFor="share">Your share</Label>
+                    {/* `aria-labelledby` is not usable here. Radix builds the thumb as
+                    `{ role: "slider", "aria-label": props["aria-label"] || label }`
+                    and forwards nothing else, so a labelledby on the root
+                    leaves the thumb — the element that actually carries the
+                    role — with no accessible name at all. Verified in
+                    production. The aria-label below is the only association
+                    Radix honours, so it repeats the visible text verbatim. */}
+                    <Label>Your share</Label>
                     <span className="font-editorial text-2xl leading-none">{share}%</span>
                   </div>
                   <Slider
-                    id="share"
                     min={1}
                     max={maxShare}
                     step={1}
                     value={[share]}
                     onValueChange={(value) => setShare(value[0] ?? 1)}
-                    aria-label="Share of the unit to buy"
+                    aria-label="Your share"
                   />
                   <p className="text-xs text-muted-foreground">
                     {listing.available}% of this unit is still open. Minimum share is 1%.
@@ -168,7 +185,7 @@ export function InvestDialog({ listing, trigger }: { listing: Listing; trigger: 
             ) : null}
 
             <DialogFooter>
-              <Button variant="outline" onClick={() => setOpen(false)}>
+              <Button variant="outline" onClick={close}>
                 Cancel
               </Button>
               {closed ? null : (

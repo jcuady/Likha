@@ -73,16 +73,17 @@ function AdminAnalytics() {
 
   const performance = useMemo(
     () =>
-      listings
-        .filter((l) => l.status !== "Draft")
+      liveListings
         .map((l) => ({
           listing: l,
           annualRent: l.rent * 12,
           returnOnPrice: (l.rent * 12 * 100) / l.price,
         }))
         .sort((a, b) => b.returnOnPrice - a.returnOnPrice),
-    [],
+    [liveListings],
   );
+  // The bar scale, derived from the ranked rows above rather than a constant.
+  const yieldCeiling = performance[0]?.returnOnPrice ?? 0;
 
   return (
     <>
@@ -203,10 +204,15 @@ function AdminAnalytics() {
                     <TableCell className="tabular-nums">{returnOnPrice.toFixed(1)}%</TableCell>
                     <TableCell className="min-w-[10rem]">
                       <div className="flex items-center gap-2">
+                        {/* Scaled against the best performer in this table, not
+                            a hardcoded 8%. Dividing by 8 while the highest
+                            actual figure was 6.3% meant no bar ever reached
+                            the end, and raising a listing above 8% would have
+                            silently capped at 100% with no way to tell. */}
                         <Progress
-                          value={(returnOnPrice / 8) * 100}
+                          value={yieldCeiling > 0 ? (returnOnPrice / yieldCeiling) * 100 : 0}
                           className="h-1.5 flex-1"
-                          aria-label={`${listing.name} gross return`}
+                          aria-label={`${listing.name} gross return ${returnOnPrice.toFixed(1)} percent, against the batch best of ${yieldCeiling.toFixed(1)} percent`}
                         />
                         <span className="w-11 shrink-0 text-right text-xs tabular-nums text-muted-foreground">
                           {listing.available}% open

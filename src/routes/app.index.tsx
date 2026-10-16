@@ -34,6 +34,7 @@ import {
   monthOverMonth,
   portfolioSeries,
   profileFor,
+  shareIncome,
 } from "@/lib/marketplace";
 
 export const Route = createFileRoute("/app/")({
@@ -131,13 +132,19 @@ function InvestorOverview() {
         <Card className="shadow-card">
           <CardHeader>
             <CardTitle className="text-sm font-medium">Income mix</CardTitle>
-            <CardDescription>Share of your holdings by property</CardDescription>
+            <CardDescription>Share of your monthly income by city</CardDescription>
           </CardHeader>
           <CardContent>
+            {/* Was titled "Income mix" and captioned "share of your holdings by
+                property" while plotting invested capital grouped by city, with
+                this month's income sitting in the hole in the middle. Three
+                different quantities in one figure. It now plots the income the
+                shares actually earn, so the ring, the slices and the centre
+                agree. */}
             <DonutChart
               data={rows.map((row) => ({
                 name: row.listing?.city ?? "Unknown",
-                value: row.invested,
+                value: shareIncome(row.listingId, row.share),
               }))}
               centerValue={formatPHP(monthIncome)}
               centerLabel="this month"
