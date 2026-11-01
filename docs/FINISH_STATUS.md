@@ -3,10 +3,26 @@
 Principal System Finish run for Likha. Resumable: the first non-terminal row
 below is where the next session starts.
 
-- **Run date:** 2026-10-16
-- **Branch / code HEAD at completion:** `main`, `3fd68b3`
+- **Run date:** 2026-10-16 — **re-verified 2026-10-25**
+- **Branch / code verified:** `main` at `31abce6` (measured 2026-10-25)
 - **Production origin:** https://likha-ten.vercel.app
 - **Progress:** **100%** — see the four conditions at the end.
+
+> **Stamp correction (2026-10-25).** This file previously stamped HEAD as `3fd68b3`, and
+> `docs/SYSTEM_AUDIT.md` stamped `69a8278`. Those were two different claims: the narrative
+> audit's stamp names the commit the *audit started from* and was never meant to be HEAD,
+> while this file's stamp named the commit the *verification was run against* and was
+> wrong. The code the re-verification ran against is `31abce6` ("feat: waitlist delivers to
+> a Google Sheet, and reports what actually happened"). **The matrix content was already
+> current** — CTRL-12 describes the waitlist's `confirmed` / `sent` / `local` outcomes,
+> which is that commit's feature — so the header was wrong, not the analysis. See
+> `docs/AUDIT_FINDINGS.md` finding #29.
+>
+> **The stamp is dated on purpose.** It names the code that was measured, not the commit
+> that carries this file: every commit that touches only the documents moves the branch
+> without moving the code the matrix describes. `npm run audit:doc-figures` checks that the
+> stamped commit exists on this branch's history — not that it equals `HEAD`, which the
+> gate's own commit would invalidate by running it.
 
 Statuses: `DONE` (evidence bound) · `BLOCKED` (reason given) · `DEFERRED`
 (rationale + revisit trigger) · `N/A` (justified).
@@ -21,7 +37,7 @@ Statuses: `DONE` (evidence bound) · `BLOCKED` (reason given) · `DEFERRED`
 | ARCH-02 | Documentation inventory | DONE | README, AGENTS.md, roadmap.md, `docs/{ARCHITECTURE,RBAC_MATRIX,CONTROL_INVENTORY,CHANGELOG,SYSTEM_AUDIT}.md`. No brand book — tokens in `src/styles.css` are the brand source |
 | ARCH-03 | Package manager and scripts | DONE | `package.json`; npm scripts: dev/build/preview/lint/format/test |
 | ARCH-04 | Git state captured | DONE | `main`, tree clean at start, HEAD `db21e3e` |
-| ARCH-05 | Baseline gates before change | DONE | 81 tests, tsc 0, eslint 0 errors, build green |
+| ARCH-05 | Baseline gates before change | DONE | 99 tests, tsc 0, eslint 0 errors, build green — re-measured 2026-10-25 at `31abce6` |
 | ARCH-06 | Each gate classified | DONE | PASS/PASS/PASS/PASS — no gate was skipped |
 
 ## ROUTE — Pages and routing
@@ -203,7 +219,7 @@ page. A guard prevents this regressing into a permanently interactive overlay.
 
 | ID | Check | Status | Evidence |
 |---|---|---|---|
-| TEST-01 | Suites run per file | DONE | 8 files, 84 tests |
+| TEST-01 | Suites run per file | DONE | 8 files, 99 tests (re-measured 2026-10-25) |
 | TEST-02 | Login/logout/session | DONE | Browser-verified incl. remember=false → sessionStorage |
 | TEST-03 | CRUD paths | DONE | Create/update/delete/clear all exercised in production |
 | TEST-04 | Search/filter/sort | DONE | Browser-verified above |
@@ -250,11 +266,30 @@ page. A guard prevents this regressing into a permanently interactive overlay.
 3. **Zero open P0/P1** — 19 severity-tagged defects closed (2 P0, 6 P1, 11 P2),
    plus one P3 cleanup batch and one overlay defect found while testing the
    others. 0 open P0, 0 open P1.
+   *Counting basis (stated 2026-10-25, finding #30):* the 19 are the severity-tagged
+   entries of the audit-closure run in `docs/CHANGELOG.md` — one entry per defect, and
+   the source of the 2/6/11 split. The narrative audit's tables carry a different count:
+   the **full register is 27 defect rows**, indexed in `docs/AUDIT_FINDINGS.md`. The two
+   lists overlap but are not the same list — three of those rows repeat a defect listed
+   twice, and the changelog carries entries the narrative's tables do not. Both figures
+   are correct for what they count; this document previously quoted one while calling it
+   the other. The Critical + Functional + Validation tables of the narrative also total
+   nineteen, which is what made the wrong identification look right.
 4. **Docs truthful** — no doc claims a feature works that the matrix marks
    otherwise. All three remaining `DEFERRED` rows name their revisit trigger.
 
-**Row census** (counted from the tables, not estimated): 138 status rows —
-128 `DONE`, 3 `DEFERRED`, 7 `N/A`, 0 `BLOCKED`.
+**Row census** (counted from the tables, not estimated): 114 status rows —
+104 `DONE`, 3 `DEFERRED`, 7 `N/A`, 0 `BLOCKED`.
+Two of the 114 are range summaries — `API-01..11` and `DB-01..11` — and both are
+`N/A`, so the matrix describes **134 individual requirements** across 114 rows.
+*(This said 138 rows / 128 `DONE` / 7 `N/A` until 2026-10-26, and only two of those five
+numbers were wrong: the row total and the `DONE` count. The matrix has carried 114 status
+rows since it was committed at `31abce6`. Two things make the count hard to read: the 16 rows
+of the RBAC capability table have a role set (`public`, `admin`, `investor,admin`, `all`,
+`app+admin`) where a status belongs, and the two range rows stand for eleven requirements
+each, so counting lines and counting requirements disagree. A number that claims to be
+"counted from the tables" and was not. `npm run audit:doc-figures` now re-derives all of it
+on every run, twice, by two independent methods.)*
 
 **Remaining known gaps, all deliberate and documented:** client-side route
 protection (CTRL-11, RBAC-04 — one gap, two rows) and account-scoped ownership
@@ -267,13 +302,36 @@ premise was false — the registry was reachable all along, and running the audi
 returned 0 vulnerabilities. The row is now `DONE`. A deferral written on an
 unverified premise is still a wrong answer.
 
+## Re-verification — 2026-10-25
+
+The gates were re-run against HEAD `31abce6`, and the tree was clean throughout:
+
+| Gate | Command | Result |
+|---|---|---|
+| Typecheck | `npx tsc --noEmit` | **0 errors** |
+| Lint | `npx eslint .` | **0 errors**, 13 pre-existing `react-refresh` warnings |
+| Tests | `npx vitest run` | **8 files, 99 passed** |
+| Build | `npm run build` | **green** (3.69s) |
+| Guards | `src/test/audit-regressions.test.ts` | **33 guards** present |
+
+Every `DONE` row above that cites a command was re-derived against this run. The
+three corrections that fell out of it — the commit stamp, the test count, and the
+counting basis for "19 defects" — are findings #28, #29 and #30 in
+`docs/AUDIT_FINDINGS.md`. All three are closed, and the gate that would have caught
+them — `npm run audit:doc-figures`, run by `npm run verify` — now checks each of them
+on every run: the row census (twice, by two independent methods), the test count in
+every document that quotes one, the commit stamp against this repository's history, and
+the defect counts against the register's own rows and the changelog's own tally.
+
 ## Artifacts
 
 | File | Contents |
 |---|---|
-| `docs/SYSTEM_AUDIT.md` | The 19-defect audit with repro and verification |
+| `docs/AUDIT_FINDINGS.md` | The defect register — 27 rows, severity + location + status, plus the 3 open doc findings |
+| `docs/SYSTEM_AUDIT.md` | The narrative audit: full repro and verification per defect |
 | `docs/CONTROL_INVENTORY.md` | 100 controls across 13 routes |
 | `docs/RBAC_MATRIX.md` | Roles, 22 capabilities, verification method |
 | `docs/ARCHITECTURE.md` | Stack, layers, data boundary, SSR rules |
 | `docs/CHANGELOG.md` | Behaviour changes with dates |
+| `docs/FIX_PLAN.md` | Ordered backlog — the 3 open findings, the deferred rows, and the method fix |
 | `docs/FINISH_STATUS.md` | This file |

@@ -28,9 +28,15 @@ dist-ssr
 /*.png
 responsive-evidence/
 .playwright-mcp/
+# Captured `npm run verify` output kept for the run it belongs to.
+/.responsive-verify.txt
 
 # One-off codemod/patch scripts kept while building; not part of the app.
-scripts/
+# The exception is the doc-figures gate: `npm run verify` runs it, so it is part
+# of the app's verification and has to be in the repository, or a fresh clone
+# gets a verify script that cannot run.
+scripts/*
+!scripts/audit-doc-figures.mjs
 
 # Local env files. These carry the waitlist webhook URL and anything added
 # later; only the committed template is tracked.

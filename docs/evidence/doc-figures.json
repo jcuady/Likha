@@ -1,0 +1,187 @@
+{
+  "check": "doc-figures",
+  "generatedAt": "2026-11-01T10:27:31.629Z",
+  "verdict": "consistent",
+  "verdictText": "row census 114 (DONE 104, DEFERRED 3, N/A 7, BLOCKED 0) and test count 99/8 both match the document",
+  "measured": {
+    "tests": 99,
+    "files": 8
+  },
+  "derivedCensus": {
+    "total": 114,
+    "DONE": 104,
+    "DEFERRED": 3,
+    "N/A": 7,
+    "BLOCKED": 0,
+    "PARTIAL": 0,
+    "FAIL": 0,
+    "NOT VERIFIED": 0
+  },
+  "derivedRequirements": 134,
+  "quotedTestCounts": [
+    {
+      "doc": "docs/FINISH_STATUS.md",
+      "tests": 99,
+      "line": "| ARCH-05 | Baseline gates before change | DONE | 99 tests, tsc 0, eslint 0 errors, build green — re-measured 2026-10-25 at `31abce6` |"
+    },
+    {
+      "doc": "docs/FINISH_STATUS.md",
+      "tests": 99,
+      "files": 8,
+      "line": "| TEST-01 | Suites run per file | DONE | 8 files, 99 tests (re-measured 2026-10-25) |"
+    },
+    {
+      "doc": "docs/FINISH_STATUS.md",
+      "tests": 99,
+      "files": 8,
+      "line": "| Tests | `npx vitest run` | **8 files, 99 passed** |"
+    },
+    {
+      "doc": "docs/SYSTEM_AUDIT.md",
+      "tests": 99,
+      "files": 8,
+      "line": "- **Test status:** PASS — 99 tests across 8 files"
+    },
+    {
+      "doc": "docs/SYSTEM_AUDIT.md",
+      "tests": 99,
+      "files": 8,
+      "line": "- [x] Automated tests pass (99 across 8 files)"
+    },
+    {
+      "doc": "docs/AUDIT_FINDINGS.md",
+      "tests": 99,
+      "files": 8,
+      "line": "**99 across 8 files**. `npm run audit:doc-figures` derives it from a real `vitest run`"
+    },
+    {
+      "doc": "docs/FIX_PLAN.md",
+      "tests": 99,
+      "files": 8,
+      "line": "| #28 | Reconcile the test count to one derived figure. `ARCH-05` said 81, `TEST-01` said 84, `SYSTEM_AUDIT.md` said 81; the measured value is **99 across 8 fil"
+    }
+  ],
+  "checks": [
+    {
+      "label": "the two independent derivations of the row count agree",
+      "ok": true,
+      "detail": "ID+status says 114, table shape says 114 — a pattern is dropping rows"
+    },
+    {
+      "label": "every coverage row has a unique ID",
+      "ok": true,
+      "detail": "duplicate IDs: "
+    },
+    {
+      "label": "the status document quotes a row census",
+      "ok": true,
+      "detail": "no '<n> status rows' + DONE/DEFERRED/N-A/BLOCKED sentence found"
+    },
+    {
+      "label": "the quoted row census equals the census counted from the matrix",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "every test count quoted in docs/FINISH_STATUS.md equals the measured 99",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the status document quotes a test count at all",
+      "ok": true,
+      "detail": "no test count found — the check would have had nothing to compare"
+    },
+    {
+      "label": "every test count quoted in docs/SYSTEM_AUDIT.md equals the measured 99",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the narrative audit quotes a test count at all",
+      "ok": true,
+      "detail": "no test count found — the check would have had nothing to compare"
+    },
+    {
+      "label": "every test count quoted in docs/AUDIT_FINDINGS.md equals the measured 99",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the defect register quotes a test count at all",
+      "ok": true,
+      "detail": "no test count found — the check would have had nothing to compare"
+    },
+    {
+      "label": "every test count quoted in docs/FIX_PLAN.md equals the measured 99",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the fix plan quotes a test count at all",
+      "ok": true,
+      "detail": "no test count found — the check would have had nothing to compare"
+    },
+    {
+      "label": "the quoted individual-requirement count equals the derived 134",
+      "ok": true,
+      "detail": "134 != 134"
+    },
+    {
+      "label": "the status document names the commit it verified",
+      "ok": true,
+      "detail": "no '**Branch / code verified:** `main` at `<sha>`' line found"
+    },
+    {
+      "label": "the stamped commit 31abce6 exists in this repository",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the stamped commit 31abce6 is on this branch's history",
+      "ok": true,
+      "detail": "git merge-base --is-ancestor 31abce6 HEAD exited 0"
+    },
+    {
+      "label": "the defect register has rows to count",
+      "ok": true,
+      "detail": "no numbered register rows found — the checks below would have had nothing to compare"
+    },
+    {
+      "label": "the register's scope table counts its own rows",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the register's severity counts table equals its own rows",
+      "ok": true,
+      "detail": ""
+    },
+    {
+      "label": "the status document quotes a register size",
+      "ok": true,
+      "detail": "no 'full register is <n> defect rows' sentence found"
+    },
+    {
+      "label": "the quoted register size equals the register's 27 rows",
+      "ok": true,
+      "detail": "27 != 27"
+    },
+    {
+      "label": "the changelog's audit section carries severity-tagged entries",
+      "ok": true,
+      "detail": "no '- **P0**' / '- **P1**' / '- **P2**' entries found in the audit section"
+    },
+    {
+      "label": "the status document quotes the severity-tagged defect tally",
+      "ok": true,
+      "detail": "no '<n> severity-tagged defects closed (...)' sentence found"
+    },
+    {
+      "label": "the quoted severity tally equals the changelog's own tally",
+      "ok": true,
+      "detail": ""
+    }
+  ],
+  "exitCode": 0
+}

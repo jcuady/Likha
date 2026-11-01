@@ -5,11 +5,12 @@ application as all three personas, not by reading the source.
 
 ## Summary
 
-- **Audit date:** 2026-10-15
-- **Branch / commit:** `main`, audit started at `69a8278`
+- **Audit date:** 2026-10-15 — re-verified 2026-10-25 against `31abce6`
+- **Branch / commit:** `main`, audit started at `69a8278` (the commit the audit began
+  from, not HEAD)
 - **Framework:** React 19, TanStack Router, Vite 8, Tailwind v4, shadcn/ui (Radix)
 - **Build status:** PASS
-- **Test status:** PASS — 81 tests across 8 files
+- **Test status:** PASS — 99 tests across 8 files
 - **Scope:** 13 page routes, 3 personas, 8 viewports, every interactive control
 - **Method:** rendered-output sweep plus a mutation probe on every new guard
 
@@ -123,10 +124,14 @@ and remain the only places that need to change:
 | Area | Missing behaviour | Priority |
 |---|---|---|
 | Admin mutations | In-memory only; a full page reload resets them (client-side navigation persists) | By design until the database lands |
-| Waitlist | Writes to `localStorage`; the UI states this honestly | Needs a destination: Resend, Sheets, webhook or Supabase |
+| Waitlist | Nothing missing — writes to a Google Sheet when `VITE_WAITLIST_WEBHOOK_URL` is set, and to browser storage when it is not | Landed at `31abce6` — re-check that `sent` stays distinguishable from an unreadable reply |
 | PDF export | Button explains it is not connected | Document storage |
 | Email delivery | Sign-up and investor invites state they are not connected | Email provider |
 | Service worker | Deliberately omitted to avoid stale-deploy bugs | Optional |
+
+**The waitlist row was written before `31abce6`.** At the time of the audit it wrote to
+`localStorage` and needed a destination; the destination shipped the day the audit was
+closed. The row above states the behaviour the code has now.
 
 ---
 
@@ -158,10 +163,14 @@ from PNG IHDR, and theme-colour drift against `SITE`.
 
 ## Final Verification
 
+The build, type check, lint and test lines were re-run on 2026-10-25 against `31abce6`
+(the run is tabulated in `docs/FINISH_STATUS.md`). The browser-verification lines below are
+the audit's own, from 2026-10-15, and were not re-run in that pass.
+
 - [x] Production build passes
 - [x] Type check passes (0 errors)
 - [x] Lint passes (0 errors; 13 pre-existing `react-refresh` warnings)
-- [x] Automated tests pass (81 across 8 files)
+- [x] Automated tests pass (99 across 8 files)
 - [x] Critical user flows tested in production
 - [x] No console errors on any route
 - [x] No broken routes
